@@ -1,0 +1,16 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "framework": "vite",
+  "installCommand": "pnpm install --frozen-lockfile",
+  "functions": {
+    "api/**/*.mjs": { "maxDuration": 60 }
+  },
+  "rewrites": [
+    { "source": "/api/providers/(.*)/(.*)", "destination": "/api/providers?author=$1&slug=$2" },
+    { "source": "/:path((?!api/|assets/|data/).*)", "destination": "/index.html" }
+  ],
+  "headers": [
+    { "source": "/api/health", "headers": [{ "key": "Cache-Control", "value": "no-store" }] },
+    { "source": "/data/(.*)", "headers": [{ "key": "Cache-Control", "value": "public, max-age=300, s-maxage=3600, stale-while-revalidate=86400" }] }
+  ]
+}

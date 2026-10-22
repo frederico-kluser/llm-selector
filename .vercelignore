@@ -1,0 +1,13 @@
+dist/
+node_modules/
+research/
+pesquisas/
+tests/
+docs/
+.agents/
+.github/
+.husky/
+*.tgz
+.env
+.env.*
+!.env.example

@@ -14,6 +14,8 @@ export interface Filters {
   price: { min: number; max: number; axis: PriceAxis; includeUnpriced: boolean; freeOnly: boolean };
   cache: { require: boolean; max: number; minDiscount: number };
   minContext: number;
+  /** Minimum OpenRouter Design Arena Elo (0 = off). */
+  minArenaElo: number;
   mins: Partial<Record<BenchmarkKey, number>>;
   requireScored: boolean;
   features: string[];
@@ -40,6 +42,7 @@ export const DEFAULT_FILTERS: Filters = {
   price: { min: 0, max: 5000, axis: "blended", includeUnpriced: true, freeOnly: false },
   cache: { require: false, max: 5000, minDiscount: 0 },
   minContext: 0,
+  minArenaElo: 0,
   mins: {},
   requireScored: false,
   features: [],
@@ -96,6 +99,7 @@ export type FacetId =
   | "features"
   | "creators"
   | "age"
+  | "arena"
   | "q";
 
 function priceFor(model: LlmModel, axis: PriceAxis): number | null {
@@ -182,6 +186,11 @@ export function matches(
 
   if (ignore !== "context" && filters.minContext > 0) {
     if (model.contextLength < filters.minContext) return false;
+  }
+
+  if (ignore !== "arena" && filters.minArenaElo > 0) {
+    const arena = model.designArena;
+    if (!arena || arena.bestElo < filters.minArenaElo) return false;
   }
 
   if (ignore !== "mins") {
@@ -399,6 +408,14 @@ export function activeChips(filters: Filters, modelCount = 0): ActiveChip[] {
       label: `context ≥ ${filters.minContext >= 1000 ? `${Math.round(filters.minContext / 1000)}K` : filters.minContext}`,
       facet: "context",
       clear: (f) => ({ ...f, minContext: 0 }),
+    });
+  }
+  if (filters.minArenaElo > 0) {
+    chips.push({
+      id: "arena",
+      label: `Design Arena ≥ ${filters.minArenaElo} Elo`,
+      facet: "arena",
+      clear: (f) => ({ ...f, minArenaElo: 0 }),
     });
   }
   for (const [key, minimum] of Object.entries(filters.mins) as [BenchmarkKey, number][]) {

@@ -42,6 +42,7 @@ export const filtersSchema = z.object({
     })
     .default({ require: false, max: 5000, minDiscount: 0 }),
   minContext: z.number().min(0).default(0),
+  minArenaElo: z.number().min(0).max(2000).default(0),
   mins: z.record(z.string(), z.number()).default({}),
   requireScored: z.boolean().default(false),
   features: z.array(z.string()).default([]),
@@ -97,7 +98,7 @@ const configShape = z.object({
   app: z.string().optional(),
   version: z.number().int().optional(),
   exportedAt: z.string().optional(),
-  view: z.enum(["explore", "compare", "presets"]).optional(),
+  view: z.enum(["explore", "compare", "probe", "presets"]).optional(),
   filters: filtersSchema.partial().optional(),
   sort: sortSchema.partial().optional(),
   weights: weightsSchema.partial().optional(),

@@ -62,6 +62,24 @@ export interface BenchmarkDef {
   coverage?: number;
 }
 
+export interface DesignArenaCategory {
+  arena: string | null;
+  category: string | null;
+  elo: number | null;
+  winRate: number | null;
+  rank: number | null;
+}
+
+/** OpenRouter's Design Arena results, kept on their own Elo scale. */
+export interface DesignArena {
+  bestElo: number;
+  avgElo: number;
+  avgWinRate: number | null;
+  bestRank: number | null;
+  samples: number;
+  categories: DesignArenaCategory[];
+}
+
 export interface AaInfo {
   slug: string;
   name: string;
@@ -112,6 +130,8 @@ export interface LlmModel {
   features: string[];
   benchmarks: BenchmarkScores;
   benchmarkSources: Partial<Record<BenchmarkKey, "artificial-analysis" | "openrouter" | null>>;
+  /** OpenRouter Design Arena (Elo scale), when OpenRouter has run this model. */
+  designArena?: DesignArena | null;
   aa: AaInfo | null;
   speed: { outputTokensPerSecond: number | null; ttftSeconds: number | null };
 }
@@ -165,7 +185,9 @@ export interface Catalog {
     withCache: number;
     deprecated: number;
     byModality: Record<string, number>;
-    aaMatchedExactly: number;
+    aaMatched: number;
+    withDesignArena?: number;
+    designArenaCategories?: number;
   };
 }
 

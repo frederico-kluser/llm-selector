@@ -235,6 +235,40 @@ export function ModelDrawer({
                     </div>
                   )}
 
+                  {model.designArena && (
+                    <>
+                      <h3 className="eyebrow mb-2 mt-5">Design Arena · OpenRouter</h3>
+                      <p className="mb-2 text-[11px] leading-relaxed text-fg-dim">
+                        Best {model.designArena.bestElo} Elo · avg {model.designArena.avgElo} ·
+                        rank #{model.designArena.bestRank ?? "—"} ·{" "}
+                        {model.designArena.samples} categories
+                      </p>
+                      <div className="overflow-hidden rounded-[8px] border border-line">
+                        {model.designArena.categories.slice(0, 6).map((row, index) => (
+                          <div
+                            key={`${row.arena}-${row.category}`}
+                            className={cn(
+                              "flex items-center justify-between px-2.5 py-1.5 text-[11.5px]",
+                              index % 2 === 0 ? "bg-white/[0.018]" : "",
+                            )}
+                          >
+                            <span className="truncate text-fg-muted">
+                              {row.category}
+                              <span className="ml-1 text-fg-dim">· {row.arena}</span>
+                            </span>
+                            <span className="numeric flex shrink-0 gap-3 text-fg">
+                              <span>{row.elo ?? "—"}</span>
+                              <span className="text-fg-dim">
+                                {row.winRate !== null ? `${row.winRate}%` : "—"}
+                              </span>
+                              <span className="text-fg-dim">#{row.rank ?? "—"}</span>
+                            </span>
+                          </div>
+                        ))}
+                      </div>
+                    </>
+                  )}
+
                   <h3 className="eyebrow mb-2 mt-5">Capabilities</h3>
                   <div className="flex flex-wrap gap-1.5">
                     {model.features.length === 0 && (

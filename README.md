@@ -23,6 +23,12 @@ in and out as JSON.
 
 ---
 
+## Live demo
+
+Deployed on Vercel as a static SPA plus five serverless functions (`api/catalog`, `api/providers`,
+`api/account`, `api/benchmarks`, `api/health`). Every visit revalidates the catalogue, and the page
+refreshes itself when you come back to the tab.
+
 ## Why another model picker
 
 Every "best LLM" list answers a question you did not ask. The useful question is *"of the models I can
@@ -64,6 +70,24 @@ Open <http://localhost:5173>. The catalogue loads without any key. Click **Conne
 
 Keys stay in the browser and are forwarded to your own SOM API process; nothing is sent anywhere else.
 
+### Deploy your own (Vercel)
+
+```bash
+npx vercel login
+npx vercel link --yes --project llm-selector
+printf '%s' "$ARTIFICIAL_ANALYSIS_API_KEY" | npx vercel env add ARTIFICIAL_ANALYSIS_API_KEY production --sensitive
+npx vercel --prod
+```
+
+`vercel.json` is already wired: Vite preset, `api/**/*.mjs` as Node functions (60 s), SPA fallback
+that deliberately excludes `/api/`, and `Cache-Control` for `/data/*`. The catalogue response is
+`public, s-maxage=120, stale-while-revalidate=86400` **only** when it is built from the server's own
+key — a response personalised by a caller-supplied `x-aa-key` is `private`, because custom headers are
+not part of a CDN cache key.
+
+Without an account you can still preview a build: `npx vercel deploy --temporary` prints a claimable
+URL (no env vars, 1-hour TTL).
+
 ### Without a server
 
 `pnpm build` produces a static site plus a catalogue snapshot fetched at build time. Everything except
@@ -90,6 +114,14 @@ pnpm build && pnpm start   # one process serving the built app and the API
 **Comparison** — cost-vs-quality scatter with an efficient-frontier overlay, radar profile for up to
 four models, ranking bars, and a side-by-side metric table. Free models are listed in their own strip
 because $0 cannot sit on a log axis.
+
+**My model** — paste your OpenRouter key, pick a model and measure what actually happens: streamed
+time-to-first-token, output tokens per second, end-to-end latency, token counts and the exact billed
+cost. Measurements stay in your browser and sit next to the published medians.
+
+**Benchmarks beyond one vendor** — the catalogue carries Artificial Analysis indices and
+OpenRouter's Design Arena results (Elo, win rate, rank across 26 categories), and with your key the
+app also reads OpenRouter's own benchmark feed (`/api/v1/benchmarks`) for all three sources.
 
 **Presets** — save the current filter + sort + score weights under a name, load curated starters, and
 export/import the entire configuration as JSON. Imports merge with a diff (new / updated / unchanged)
@@ -165,6 +197,7 @@ normalisation, and baseline-anchored bars. No charting library, no runtime confi
 | `pnpm test` | Unit tests (33 specs) |
 | `pnpm typecheck` | `tsc --noEmit` |
 | `pnpm catalog` | Refresh only the snapshot |
+| `npx vercel deploy --temporary` | Preview build without an account (claimable, 1 h) |
 | `npx llm-selector` | Run the published package (after `pnpm build`) |
 
 ## Publishing

@@ -45,3 +45,4 @@ pesquisas/
 
 # npm pack output
 *.tgz
+.vercel

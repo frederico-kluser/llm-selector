@@ -13,6 +13,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Toaster, toast } from "sonner";
 
 import { ModelDrawer } from "@/components/ModelDrawer";
+import { ProbeView } from "@/components/ProbeView";
 import { CompareView, PresetsView } from "@/components/views";
 import { KeyDialog } from "@/components/KeyDialog";
 import { CostQualityScatter } from "@/components/charts/Scatter";
@@ -92,6 +93,30 @@ export default function App() {
     if (url.view) state.setView(url.view as View);
     if (url.selected) state.setSelected(url.selected);
     void state.hydrate();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  /* ------------------------------------------- refresh on return to the tab */
+  useEffect(() => {
+    let last = Date.now();
+    const revalidate = () => {
+      if (document.visibilityState === "hidden") return;
+      // Re-fetch when the user comes back after a while; the API/CDN cache keeps it cheap.
+      if (Date.now() - last < 60_000) return;
+      last = Date.now();
+      void state.hydrate();
+    };
+    const onVisible = () => {
+      if (document.visibilityState === "visible") revalidate();
+    };
+    window.addEventListener("focus", revalidate);
+    document.addEventListener("visibilitychange", onVisible);
+    const interval = window.setInterval(revalidate, 5 * 60 * 1000);
+    return () => {
+      window.removeEventListener("focus", revalidate);
+      document.removeEventListener("visibilitychange", onVisible);
+      window.clearInterval(interval);
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -261,6 +286,7 @@ export default function App() {
                 options={[
                   { value: "explore", label: "Explore" },
                   { value: "compare", label: "Compare" },
+                  { value: "probe", label: "My model" },
                   { value: "presets", label: "Presets" },
                 ]}
               />
@@ -308,6 +334,7 @@ export default function App() {
               options={[
                 { value: "explore", label: "Explore" },
                 { value: "compare", label: "Compare" },
+                { value: "probe", label: "My model" },
                 { value: "presets", label: "Presets" },
               ]}
             />
@@ -381,6 +408,15 @@ export default function App() {
                 candidates={sorted}
                 onRemove={state.toggleSelected}
                 onOpenSearch={() => state.setView("explore")}
+              />
+            )}
+
+            {view === "probe" && (
+              <ProbeView
+                models={models}
+                hasKey={Boolean(keys.openrouter)}
+                onOpenKeys={() => setKeyDialog(true)}
+                canUseApi={state.source === "api"}
               />
             )}
 

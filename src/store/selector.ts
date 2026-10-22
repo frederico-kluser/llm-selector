@@ -24,7 +24,7 @@ import {
 } from "../lib/presets";
 import { DEFAULT_WEIGHTS, type ScoreWeights } from "../lib/scoring";
 
-export type View = "explore" | "compare" | "presets";
+export type View = "explore" | "compare" | "probe" | "presets";
 export type Density = "compact" | "cozy" | "comfortable";
 export type Status = "idle" | "loading" | "ready" | "error";
 

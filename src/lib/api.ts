@@ -176,3 +176,37 @@ export async function fetchHealth(signal?: AbortSignal) {
 }
 
 export type { AaFeed };
+
+export type BenchmarkSource = "artificial-analysis" | "design-arena" | "openrouter";
+
+export interface OrBenchmarkFeed {
+  source: BenchmarkSource;
+  asOf: string | null;
+  citation: string | null;
+  sourceUrl: string | null;
+  version: string | null;
+  modelCount: number;
+  rows: Record<string, unknown>[];
+}
+
+/**
+ * OpenRouter's own benchmark endpoint (AA indices, Design Arena rows and OpenRouter task
+ * benchmarks). Needs the user's key; the request goes through our server so the key never
+ * lands in a URL or a log line the browser can see.
+ */
+export async function fetchOrBenchmarks(
+  orKey: string,
+  source: BenchmarkSource,
+  signal?: AbortSignal,
+): Promise<OrBenchmarkFeed> {
+  const headers: Record<string, string> = {};
+  if (orKey) headers["x-or-key"] = orKey;
+  const response = await fetch(`${API_BASE}/benchmarks?source=${source}`, { headers, signal });
+  const json = await response.json().catch(() => ({}));
+  if (!response.ok) {
+    throw new Error(
+      (json as { error?: string }).error ?? `Benchmark feed responded ${response.status}`,
+    );
+  }
+  return json as OrBenchmarkFeed;
+}
