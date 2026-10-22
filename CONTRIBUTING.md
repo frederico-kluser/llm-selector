@@ -53,6 +53,18 @@ under the project licence (Developer Certificate of Origin 1.1). Add `Signed-off
 3. `pnpm typecheck && pnpm test && pnpm build` must pass locally; CI enforces the same.
 4. Add a CHANGELOG entry under `## [Unreleased]` for user-visible changes.
 
+## Releasing
+
+```bash
+python3 ~/.dsh/skills/opensource-project/scripts/oss-version.py next --json   # SemVer from commits
+python3 ~/.dsh/skills/opensource-project/scripts/oss-changelog.py --write      # generated section
+bash ~/.dsh/skills/opensource-project/scripts/oss-gate.sh release --version X.Y.Z
+git tag -a vX.Y.Z -m "vX.Y.Z — …" && git push origin vX.Y.Z
+gh release create vX.Y.Z --verify-tag --notes-file notes.md
+```
+
+The release event triggers `publish.yml`. Do not create releases by hand without the tag.
+
 ## Adding a data source
 
 Include, in the PR description: the endpoint, the licence/terms link, the attribution line you will
