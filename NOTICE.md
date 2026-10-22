@@ -33,6 +33,13 @@ code (MIT) and the data (theirs).
 - This notice is a summary written by a maintainer, not legal advice. Read the provider terms
   yourself before publishing an instance.
 
+## Trademarks
+
+The MIT licence covers the source code in this repository. It does not grant rights to the names
+"SOM" or "LLM Selector", or to the SOM logo, which are trademarks of the project author. Forks are
+welcome to keep the attribution required by the data licences, but should not present themselves as
+the upstream project.
+
 ## Benchmarks named in the UI
 
 GPT, Claude, Gemini, Qwen, DeepSeek, Kimi, GLM, Mistral, Llama, Grok, Nemotron, MiniMax and other

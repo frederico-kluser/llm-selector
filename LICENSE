@@ -19,12 +19,3 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
-
----
-
-The licence above covers the source code of SOM only. It does not cover the
-model catalogue data published by OpenRouter or the evaluation data published
-by Artificial Analysis, which remain subject to their own terms. See NOTICE.md
-and README.md ("Data sources & attribution"). The names "SOM" and "LLM Selector"
-and the SOM logo are trademarks of the project author and are not granted by
-the MIT licence.
