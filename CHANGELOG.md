@@ -1,4 +1,9 @@
 # Changelog
+## [0.2.1] - 2026-10-22
+
+### Bug Fixes
+- **npm:** keep provenance in CI only and document publishing (#11) ([2bec208](https://github.com/frederico-kluser/llm-selector/commit/2bec208))
+
 
 All notable changes to this project are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and this project adheres to
