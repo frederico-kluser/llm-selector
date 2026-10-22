@@ -89,9 +89,21 @@ export function ModelTable({
   const end = Math.min(models.length, Math.ceil((scrollTop + viewport) / rowHeight) + OVERSCAN);
   const slice = models.slice(start, end);
 
+  const totalWidth = visibleColumns.reduce((sum, column) => sum + column.width, 0);
+
   return (
-    <div className="overflow-hidden rounded-[10px] border border-line bg-white/[0.012]">
-      <div className="sticky top-0 z-10 flex items-center border-b border-line bg-base/95 backdrop-blur-sm">
+    <div className="rounded-[10px] border border-line bg-white/[0.012]">
+      <div
+        ref={scroller}
+        onScroll={(event) => setScrollTop(event.currentTarget.scrollTop)}
+        style={{ maxHeight }}
+        className="hidden overflow-auto overscroll-contain md:block"
+        role="table"
+        aria-rowcount={models.length}
+        aria-label="Model catalogue"
+      >
+      <div style={{ minWidth: totalWidth }}>
+      <div className="sticky top-0 z-20 flex items-center border-b border-line bg-base/95 backdrop-blur-sm">
         {visibleColumns.map((column) => {
           const active = column.sortKey && sort.key === column.sortKey;
           return (
@@ -104,6 +116,7 @@ export function ModelTable({
               title={column.hint}
               className={cn(
                 "group flex h-8 items-center gap-1 px-2 text-[10px] font-medium uppercase tracking-[0.09em]",
+                column.key === "model" && "sticky left-0 z-[21] bg-base",
                 column.align === "right" ? "justify-end" : "justify-start",
                 column.sortKey ? "cursor-pointer hover:text-fg" : "cursor-default",
                 active ? "text-accent" : "text-fg-dim",
@@ -121,14 +134,6 @@ export function ModelTable({
         })}
       </div>
 
-      <div
-        ref={scroller}
-        onScroll={(event) => setScrollTop(event.currentTarget.scrollTop)}
-        style={{ maxHeight }}
-        className="overflow-y-auto overscroll-contain"
-        role="table"
-        aria-rowcount={models.length}
-      >
         <div style={{ height: totalHeight, position: "relative" }}>
           {slice.map((model, index) => {
             const absoluteIndex = start + index;
@@ -165,6 +170,7 @@ export function ModelTable({
                     className={cn(
                       "flex items-center gap-1.5 px-2",
                       column.align === "right" && "justify-end",
+                      column.key === "model" && "sticky left-0 z-[15] bg-[var(--color-base)]",
                     )}
                   >
                     {column.key === "model" && (
@@ -225,6 +231,75 @@ export function ModelTable({
           })}
         </div>
       </div>
+      </div>
+      <MobileCards models={models} selected={selected} onToggle={onToggle} onInspect={onInspect} />
+    </div>
+  );
+}
+
+/** Below md the fixed-width grid cannot work, so rows become compact cards. */
+function MobileCards({
+  models,
+  selected,
+  onToggle,
+  onInspect,
+}: {
+  models: LlmModel[];
+  selected: string[];
+  onToggle: (id: string) => void;
+  onInspect: (id: string) => void;
+}) {
+  return (
+    <div className="divide-y divide-line/70 md:hidden">
+      {models.slice(0, 60).map((model) => (
+        <div key={model.id} className="p-2.5">
+          <button
+            type="button"
+            onClick={() => onInspect(model.id)}
+            className="flex w-full items-start justify-between gap-2 text-left"
+          >
+            <span className="min-w-0">
+              <span className="block truncate text-[12.5px] text-fg">
+                {shortModelName(model.name, model.authorLabel)}
+              </span>
+              <span className="block truncate text-[10.5px] text-fg-dim">{model.authorLabel}</span>
+            </span>
+            <Badge tone={model.openness === "open" ? "open" : "closed"}>
+              {OPENNESS_LABELS[model.openness]}
+            </Badge>
+          </button>
+          <div className="mt-1.5 grid grid-cols-4 gap-1.5 text-[10.5px]">
+            <MobileStat label="Intel" value={formatScore(model.benchmarks.intelligence)} />
+            <MobileStat label="Blended" value={formatPrice(model.pricing.blended)} />
+            <MobileStat label="Context" value={formatContext(model.contextLength)} />
+            <MobileStat label="Cache" value={formatPrice(model.pricing.cacheRead)} />
+          </div>
+          <button
+            type="button"
+            onClick={() => onToggle(model.id)}
+            className={cn(
+              "mt-2 w-full rounded-[5px] border py-1 text-[11px]",
+              selected.includes(model.id)
+                ? "border-accent/40 bg-accent/10 text-accent"
+                : "border-line text-fg-muted",
+            )}
+          >
+            {selected.includes(model.id) ? "In comparison" : "Add to comparison"}
+          </button>
+        </div>
+      ))}
+      {models.length > 60 && (
+        <p className="p-2.5 text-[11px] text-fg-dim">Showing the first 60 of {models.length} — use filters to narrow.</p>
+      )}
+    </div>
+  );
+}
+
+function MobileStat({ label, value }: { label: string; value: string }) {
+  return (
+    <div>
+      <div className="text-fg-dim">{label}</div>
+      <div className="numeric text-fg">{value}</div>
     </div>
   );
 }

@@ -315,9 +315,9 @@ export default function App() {
         </header>
 
         {chips.length > 0 && (
-          <div className="mx-auto w-full max-w-[1680px] px-3 pt-2.5 sm:px-4">
-            <div className="flex flex-wrap items-center gap-1.5">
-              {chips.slice(0, 8).map((chip) => (
+          <div className="sticky top-14 z-30 glass border-b border-line/60">
+            <div className="mx-auto flex w-full max-w-[1680px] flex-wrap items-center gap-1.5 px-3 py-1.5 sm:px-4">
+              {chips.map((chip) => (
                 <button
                   key={chip.id}
                   type="button"
@@ -328,9 +328,7 @@ export default function App() {
                   <X className="h-2.5 w-2.5 opacity-60 group-hover:opacity-100" strokeWidth={2} />
                 </button>
               ))}
-              {chips.length > 8 && (
-                <span className="text-[11px] text-fg-dim">+{chips.length - 8} more</span>
-              )}
+
               <button
                 type="button"
                 onClick={reset}
@@ -755,16 +753,25 @@ function ExploreView({
 
 function Legend() {
   return (
-    <div className="hidden items-center gap-3 text-[10px] text-fg-dim md:flex">
+    <div className="hidden flex-wrap items-center gap-3 text-[10px] text-fg-dim md:flex">
       <span className="flex items-center gap-1">
-        <span className="h-2 w-2 rounded-full bg-open/40 ring-1 ring-open" /> open
+        <span className="h-2 w-2 rounded-full bg-accent/40 ring-1 ring-accent" /> filled = open
       </span>
       <span className="flex items-center gap-1">
-        <span className="h-2 w-2 rounded-full ring-1 ring-info" /> closed
+        <span className="h-2 w-2 rounded-full ring-1 ring-fg-muted" /> ring = proprietary
+      </span>
+      <span className="flex items-center gap-1">
+        <span className="flex items-end gap-[2px]">
+          <span className="h-1 w-1 rounded-full bg-fg-dim" />
+          <span className="h-1.5 w-1.5 rounded-full bg-fg-dim" />
+          <span className="h-2 w-2 rounded-full bg-fg-dim" />
+        </span>
+        dot size = context
       </span>
       <span className="flex items-center gap-1">
         <span className="h-px w-4 border-t border-dashed border-accent/60" /> frontier
       </span>
+      <span className="text-fg-dim/80">colour = lab</span>
     </div>
   );
 }

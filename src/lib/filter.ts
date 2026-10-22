@@ -8,6 +8,8 @@ export interface Filters {
   q: string;
   input: { mode: InputMode; values: Modality[] };
   output: OutputModality[];
+  /** Strict "text in, text out and nothing else" predicate. */
+  textOnly: boolean;
   weights: WeightsMode;
   price: { min: number; max: number; axis: PriceAxis; includeUnpriced: boolean; freeOnly: boolean };
   cache: { require: boolean; max: number; minDiscount: number };
@@ -33,6 +35,7 @@ export const DEFAULT_FILTERS: Filters = {
   q: "",
   input: { mode: "all", values: [] },
   output: [],
+  textOnly: false,
   weights: "any",
   price: { min: 0, max: 5000, axis: "blended", includeUnpriced: true, freeOnly: false },
   cache: { require: false, max: 5000, minDiscount: 0 },
@@ -43,7 +46,7 @@ export const DEFAULT_FILTERS: Filters = {
   creators: [],
   maxAgeDays: 0,
   hideDeprecated: true,
-  hideAliases: false,
+  hideAliases: true,
   hideBatch: true,
   hideFree: false,
 };
@@ -129,9 +132,24 @@ export function matches(
     if (!filters.output.every((m) => model.modalities.output.includes(m))) return false;
   }
 
+  if (filters.textOnly) {
+    const outs = model.modalities.output;
+    if (!(model.modalities.input.length === 1 && model.modalities.input[0] === "text")) return false;
+    if (!(outs.length === 1 && outs[0] === "text")) return false;
+  }
+
+  if (filters.textOnly) {
+    const onlyText =
+      model.modalities.input.length === 1 &&
+      model.modalities.input[0] === "text" &&
+      model.modalities.output.length === 1 &&
+      model.modalities.output[0] === "text";
+    if (!onlyText) return false;
+  }
+
   if (ignore !== "weights" && filters.weights !== "any") {
-    if (filters.weights === "open" && model.openness !== "open") return false;
-    if (filters.weights === "closed" && model.openness === "open") return false;
+    // Exact matching — never fold "unknown" into proprietary, or the facet counts lie.
+    if (model.openness !== filters.weights) return false;
   }
 
   if (ignore !== "price") {
@@ -299,6 +317,14 @@ export interface ActiveChip {
 
 export function activeChips(filters: Filters, modelCount = 0): ActiveChip[] {
   const chips: ActiveChip[] = [];
+  if (filters.textOnly) {
+    chips.push({
+      id: "textOnly",
+      label: "text in / text out only",
+      facet: "input",
+      clear: (f) => ({ ...f, textOnly: false }),
+    });
+  }
   if (filters.q.trim()) {
     chips.push({
       id: "q",

@@ -6,6 +6,24 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+### Fixed
+
+- The model table scrolls horizontally below ~1374 px with a sticky model column, and switches to
+  cards under `md` instead of clipping the SOM column.
+- Scatter marks are keyboard focusable buttons with per-model `aria-label`s, wrapped in a
+  `<figure>`/`<figcaption>`; the table below is the accessible equivalent.
+- `--color-fg-dim` raised to #8a9099 (6.1:1) — eyebrows, table headers and axis ticks were failing
+  WCAG 1.4.3.
+- The weights facet no longer folds "unknown" into proprietary: counts and predicate now agree, and
+  the unknown bucket is shown.
+- **Text-only** is a real predicate (text in, text out, nothing else) instead of a no-op alias for
+  "accepts text".
+- Legend matches the encoding (filled = open, ring = proprietary, colour = lab, dot size = context)
+  and the chart explains that floors exclude unscored models rather than scoring them zero.
+- Single-value sliders use a single thumb; a no-op price drag no longer emits a phantom price chip.
+- `-latest` aliases are hidden by default so they do not pollute the frontier, and the applied-filter
+  strip is sticky with every chip removable.
+
 ## [0.1.0] — 2026-10-22
 
 First public release.

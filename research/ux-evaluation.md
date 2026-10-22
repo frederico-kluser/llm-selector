@@ -5,7 +5,7 @@
 
 **Method (`uxui-evaluator` skill).** Skill loaded and followed. `UXUI_API_KEY` is **not set** in this environment, so the `audit` toolbox call was not made and the evaluation ran on the skill's **offline/local procedure**: framework applied from internal knowledge, severities mapped to `critical / warning / suggestion`, score computed locally. `api_enriched: false`. Principle codes below are mapped to the nearest framework entry and could **not** be verified against the API catalogue.
 
-**Revision note.** The working tree was being edited by another agent while this evaluation ran; all `file:line` citations were re-verified against the tree as of 2026-10-22T07:12-03. Two concurrent edits landed during the pass and are accounted for below: the `disabled` prop was dropped from the input-modality chips (`FilterRail.tsx:194-203`), and benchmark chip labels gained a `PRETTY_KEY` map (`filter.ts:293-317`). Neither changes any finding's substance.
+**Revision note.** Another agent was editing and reverting `src/` while this evaluation ran. Every `file:line` citation below was re-verified against the working tree at **2026-10-22T07:15-03** and each one quotes the code it points at, so the snippet — not the number — is the authoritative locator if lines drift.
 
 **Interface type:** `dashboard` (data-dense comparison surface; dominant task = *filter 468 models down, then decide between 2–6*). Parts evaluated: **1 (Foundations), 2 (Core), 4 (Interface Patterns)**, plus Part 3 (Design Systems) where typography/colour is the issue and Part 6 (accessibility, trust) for the WCAG failures. Part 5 skipped — no AI-specific signalling in the UI.
 
@@ -15,15 +15,15 @@
 
 | | |
 |---|---|
-| Framework score (skill formula) | **0 / 100 — saturated** (2×critical −30, 8×warning −56, 17×suggestion −51 = −137; the skill's linear model only works up to ~8 findings) |
+| Framework score (skill formula) | **0 / 100 — saturated** (2×critical −30, 8×warning −56, 19×suggestion −57 = −143; the skill's linear model only assumes up to ~8 findings) |
 | Practical band | **fair** — the visual system is genuinely good; the failures concentrate at the two points of first use (the table and the hero chart) and in accessibility |
 | Blockers | **2** |
 | High | **8** |
-| Medium | **12** |
+| Medium | **14** |
 | Low | **5** |
 | WCAG 2.2 | fails **1.4.3** (contrast) on every micro-label; **1.4.11** on control boundaries; **1.3.1/4.1.2** on the table grid; the scatter has no keyboard/AT path (**2.1.1**) |
 
-The build followed the dossier well where the dossier was specific: self-excluding facet counts, the empty-state repair diagnostic, virtualised 468-row table with sticky header, reduced-motion clamping, URL-as-state, log price slider with distribution, Pareto frontier, blocked reuse of the file itself. The failures are mostly **width/overflow plumbing, the colour channel on the scatter, the honesty of counts, and 10 px text at 4.08:1** — all cheap to fix.
+The build followed the dossier well where the dossier was specific: self-excluding facet counts, the empty-state repair diagnostic, virtualised 468-row table with sticky header, reduced-motion clamping, URL-as-state, log price slider with distribution, Pareto frontier, and an honest `—` for every missing value. The failures are mostly **width/overflow plumbing, the colour channel on the scatter, the honesty of counts, and 10 px text at 4.08:1** — all cheap to fix.
 
 ### Severity profile
 
@@ -31,7 +31,7 @@ The build followed the dossier well where the dossier was specific: self-excludi
 |---|---|---|
 | blocker | 2 | the table at any laptop width < 1374 px; the scatter for keyboard/AT users |
 | high | 8 | contrast, count honesty, no-op filters, silent row deletion, two chart-encoding lies, duplicate plotting, filter-state visibility |
-| medium | 12 | dead slider thumbs, price control geometry, recommendation cards, scroll planes, ARIA, radar gating, jargon, key validation, palette, sharing, loading |
+| medium | 14 | dead slider thumbs, price control geometry, recommendation cards, scroll planes, ARIA, radar gating, jargon, false "pressed" state, key validation, palette, sharing, loading, sort affordance |
 | low | 5 | dimmed-but-unfocusable values, formatting, glyphs, chart chrome, in-app motion control |
 
 ---
@@ -99,8 +99,8 @@ All are normal-size text → **require 4.5:1**; every one fails. There are 40+ s
 **Evidence**
 - Screenshot, rail Weights row: `Any 393 · Open 208 · Proprietary 170`. **393 − 208 = 185 ≠ 170** → 15 models are neither displayed nor accounted for.
 - `filter.ts:135-137` — `weights === "closed"` returns false only when `model.openness === "open"`, i.e. **`unknown` matches "Proprietary"**.
-- `FilterRail.tsx:282-286` — the numeral comes from `counts.weights[option.id]`, i.e. `closed` only; `counts.weights.unknown` is computed (`filter.ts:228`) and thrown away.
-- `FilterRail.tsx:291-293` — the hint even explains the folding in prose instead of exposing it as a value.
+- `FilterRail.tsx:283-287` — the numeral comes from `counts.weights[option.id]`, i.e. `closed` only; `counts.weights.unknown` is computed (`filter.ts:228`) and thrown away.
+- `FilterRail.tsx:291-294` — the hint even explains the folding in prose instead of exposing it as a value.
 **Remediation** Either (a) make the predicate honest — `weights === "closed" → model.openness === "closed"` — and surface the third bucket as a 4th option `Unknown (15)` in the same 3-col grid (`grid-cols-2` → `grid-cols-4`, or `grid-cols-2` with `Any` full-width); or (b) keep the fold but label it `Proprietary + unknown 185` and add an `Unknown` badge to those rows in `ModelTable`'s Weights cell (`ModelTable.tsx:190-198`, which already handles `unknown` via `OPENNESS_LABELS`). Dossier §7.5 prefers (a).
 **Impact** A count is a promise. A user who clicks "Proprietary 170" and receives 185 rows learns that numbers in this rail are approximate, which retroactively discredits the distance-to-result information the whole faceted model depends on.
 
@@ -109,9 +109,9 @@ All are normal-size text → **require 4.5:1**; every one fails. There are 40+ s
 ### H-05 · high · "Text-only" is a no-op: it filters for "accepts text", not "text only"
 **Principle** C.1.4.01 Error prevention / F.1.1.03 mental model; dossier §1.3 (`text only` must be `outputs == ["text"]`, a distinct predicate).
 **Evidence**
-- `FilterRail.tsx:220-227` — the chip's `title` literally reads *"Only models that accept text and nothing else"*, but it patches `{ input: { mode: "all", values: ["text"] } }`.
+- `FilterRail.tsx:221-228` — the chip's `title` literally reads *"Only models that accept text and nothing else"*, but it patches `{ input: { mode: "all", values: ["text"] } }`.
 - `filter.ts:123-128` — with `mode: "all"`, the predicate is `selected.every(has)` → **text ∈ input modalities**, which is true of all 393 results. Clicking it changes the count by zero and adds an `input text` applied chip.
-- Additionally, the dossier's `text only` predicate belongs to **output** modality; the rail's Output section (`FilterRail.tsx:237`) has no text-only affordance and is collapsed by default.
+- Additionally, the dossier's `text only` predicate belongs to **output** modality; the rail's Output section (`FilterRail.tsx:238`) has no text-only affordance and is collapsed by default.
 **Remediation** Add a real predicate: `filters.textOnlyOut: boolean` → `model.modalities.output.length === 1 && output[0] === "text"`, rendered as the first chip of the **Output** section (which should then be open by default), with the count of matching models. Delete the mislabelled chip from Input modalities, or relabel it `Has text input` if that is what it does.
 **Impact** This is the one control that answers the most common real-world question ("I only need a text generator"). Today it silently does nothing, so the user's result set is filled with vision/audio models they explicitly tried to exclude, and they will conclude the filter is broken — which it is.
 
@@ -121,7 +121,7 @@ All are normal-size text → **require 4.5:1**; every one fails. There are 40+ s
 **Principle** C.1.4.01 Error prevention / F.1.1.06 missing-data transparency; dossier §1.3 and §7.5 ("41 models have no score → Include them"; a threshold over a 40 %-coverage axis silently deletes 60 % of the catalogue).
 **Evidence**
 - `filter.ts:177` — `if (value === null || value < minimum) return false;` — a model with no score for the axis is dropped with no signal.
-- `FilterRail.tsx:456-476` — the only disclosure is the coverage numeral inside `Label`'s hint (`≥ 60 · 182 models`, `:462`). There is no "N models unscored → include", no count of what the threshold removed, and no `includeUnscored` control (the global `requireScored` switch at `:450-455` is the *inverse* and lives above the axes).
+- `FilterRail.tsx:457-477` — the only disclosure is the coverage numeral inside `Label`'s hint (`≥ 60 · 182 models`, `:462`). There is no "N models unscored → include", no count of what the threshold removed, and no `includeUnscored` control (the global `requireScored` switch at `:450-455` is the *inverse* and lives above the axes).
 - Catalogue has 22 benchmark axes (`public/data/catalog.json`), so a realistic user sets 2–3 thresholds and loses half the table without ever learning why.
 **Remediation** Under each `Range` add `EmptyHint`-styled line: `{unscored} of {total} models have no {axis} score · [Include]`, wired to a per-axis or global `includeUnscored` flag used by the predicate (`value === null ? filters.includeUnscored : value >= minimum`). Also render the surviving count next to the threshold label (`≥ 60 · 182 scored · 211 unscored`), and put the resulting row count in the section header so the effect of the drag is visible before release.
 **Impact** Silent row deletion is the fastest way to destroy trust in a comparison tool: users cannot distinguish "this model is bad" from "this model was not measured", which is exactly the distinction the tool exists to make. Fix is ~15 lines.
@@ -183,7 +183,7 @@ Also raise the visible cap from 8 to whatever fits two rows (~12 at 1600 px).
 **Principle** C.1.4.01 Error prevention / affordance truthfulness (F.4.2.02 target behaviour); dossier §1.6 (a range *is* the filter value).
 **Evidence** `Range` always renders two thumbs (`ui/index.tsx:254-255`), but three call sites are single-valued and discard the first element:
 - `FilterRail.tsx:391-403` "Max cache-read price" — `value={[0.01, Math.min(filters.cache.max, 20)]}`, `onValueChange={([, max]) => …}`.
-- `FilterRail.tsx:406-419` "Cache saves at least" — `value={[0, filters.cache.minDiscount]}`.
+- `FilterRail.tsx:410-418` "Cache saves at least" — `value={[0, filters.cache.minDiscount]}`.
 - `FilterRail.tsx:466` and `:489` — one dead left thumb **per benchmark axis** (2 core + up to 9 domain = up to 11 axes per session).
 Dragging the left thumb moves a handle, shows a hover scale (`ui/index.tsx:254 hover:scale-110`) and changes nothing.
 **Remediation** Add a single-thumb mode to `Range`: `if (single) render one <SliderPrimitive.Thumb>` with `value={[v]}`; or pass an explicit `lockedMin` that renders the left thumb as `pointer-events-none opacity-25` with `cursor-default`. Prefer the real single-thumb slider — Radix supports `value` with one element natively.
@@ -196,8 +196,8 @@ Dragging the left thumb moves a handle, shows a hover scale (`ui/index.tsx:254 h
 **Evidence**
 - `FilterRail.tsx:316-324` — the histogram is `<PriceHistogram width={244} height={24}>` while the track is `w-full` inside `px-1` of a 288 px rail (≈262 px) and the SVG is `absolute inset-x-0 bottom-0`. Screenshot, rail price block: the bars stop ≈18 px short of the right thumb, so bin *n* is not under the price it represents — a 26-bin distribution read against a 262 px axis.
 - No selection tint: `PriceHistogram` paints every bar `rgba(255,255,255,0.16)` (`Charts.tsx:258`) regardless of `filters.price.min/max`; the full span is the default state, so the histogram has no interactive meaning.
-- `FilterRail.tsx:340-345` — the min/max read-outs are static `<span>`s. There is no way to type `$1.13`; the log slider resolves to `(max−min)/1000` multiplicative steps.
-- `FilterRail.tsx:329` vs `filter.ts:42` — the filter default is `max: 5000` but the thumb is clamped to `priceBounds.max` (263): the thumb sits at the far right while the value is not at its maximum. Touch the right thumb and release at the end and `max` becomes 263 → `activeChips` (`filter.ts:369`, `max < 5000`) emits a **phantom chip** `blended $0.00–$263.00/1M` and a URL param, even though zero rows are filtered, and the true "unbounded" state is now unreachable except via Reset.
+- `FilterRail.tsx:340-346` — the min/max read-outs are static `<span>`s. There is no way to type `$1.13`; the log slider resolves to `(max−min)/1000` multiplicative steps.
+- `FilterRail.tsx:329` vs `filter.ts:42` — the filter default is `max: 5000` but the thumb is clamped to `priceBounds.max` (263): the thumb sits at the far right while the value is not at its maximum. Touch the right thumb and release at the end and `max` becomes 263 → `activeChips` (`filter.ts:344`, `max < 5000`) emits a **phantom chip** `blended $0.00–$263.00/1M` and a URL param, even though zero rows are filtered, and the true "unbounded" state is now unreachable except via Reset.
 **Remediation** (a) `width={244}` → measure the container (`useMeasure`, already exported from `Scatter.tsx:24`) or `className="w-full"` with `viewBox`; (b) pass `[from,to]` into `PriceHistogram` and paint in-range bars `rgba(198,242,78,0.35)`; (c) replace the two static spans with `<input type="number" className="h-6 w-[72px] numeric rounded-[4px] border border-line bg-white/[0.03] px-1.5 text-[11px]" value={…}>` bound to `price.min/max`; (d) treat `max >= priceBounds.max` as unbounded: set the patch to `{ …price, max: 5000 }` when the thumb is at the right edge, and gate the chip on `max < priceBounds.max`.
 **Impact** The histogram is the one control that teaches where the market actually lives; drawn 7 % out of register against its own axis it teaches a slightly wrong distribution. And a budget tool without a typed budget is a category error — `$2.50` is a real procurement ceiling.
 
@@ -257,7 +257,7 @@ Dragging the left thumb moves a handle, shows a hover scale (`ui/index.tsx:254 h
 
 ### M-19 · medium · "Clear" is rendered as an active, selected filter value
 **Principle** C.1.1.01 Consistency (state language); dossier §1.2/§1.3 (an accent chip means "this value is applied").
-**Evidence** `FilterRail.tsx:228-233` — `<Chip active={filters.input.values.length === 0} onClick={…}>Clear</Chip>`. With the default filter (no modality selected) this renders in the exact accent treatment that means "applied value" everywhere else in the same chip group (`ui/index.tsx:98-100`: `border-accent/40 bg-accent/15 text-accent`). Screenshot, rail Input modalities: **"Clear" is highlighted while "Text-only" is neutral**, on a screen where nothing is selected.
+**Evidence** `FilterRail.tsx:229-234` — `<Chip active={filters.input.values.length === 0} onClick={…}>Clear</Chip>`. With the default filter (no modality selected) this renders in the exact accent treatment that means "applied value" everywhere else in the same chip group (`ui/index.tsx:98-100`: `border-accent/40 bg-accent/15 text-accent`). Screenshot, rail Input modalities: **"Clear" is highlighted while "Text-only" is neutral**, on a screen where nothing is selected.
 **Remediation** Render it outside the chip group as a text button: `className="text-[11px] text-fg-dim underline decoration-dotted hover:text-fg"`, `aria-label="Clear modality selection"`, always visible, never accent. If it must stay in the row, use `variant="ghost"` styling and no `aria-pressed`.
 **Impact** The default screen tells the user that a reset action is a selected value. It also gives `aria-pressed="true"` to a control that is not a toggle (`ui/index.tsx:94`), which screen readers announce as a pressed button — the one place the accessibility tree actively lies about state.
 
@@ -359,7 +359,7 @@ Dragging the left thumb moves a handle, shows a hover scale (`ui/index.tsx:254 h
 | §0.1 Sticky 48 px toolbar above the table | ❌ | Toolbar scrolls away — M-14 |
 | §0.1 Focus ring 2 px accent + 2 px offset | ✅ | `index.css:102-106` |
 | §1.1 Facets in a sidebar, applied state in a horizontal overview | ⚠️ | Both exist; the overview is not sticky — H-10 |
-| §1.2 Three tiers, output/weights/price always open | ⚠️ | `Output` is `defaultOpen={false}` (`FilterRail.tsx:237`); no remembered open/closed state (`Section` uses local `useState`, remounts per mobile-dialog open) |
+| §1.2 Three tiers, output/weights/price always open | ⚠️ | `Output` is `defaultOpen={false}` (`FilterRail.tsx:238`); no remembered open/closed state (`Section` uses local `useState`, remounts per mobile-dialog open) |
 | §1.2 4–7 values per facet, "show top 10 then more" | ✅ | `FilterRail.tsx:131-134, 550-556` |
 | §1.3 OR-inside / AND-outside, multi-select | ✅ | `filter.ts:122-161` |
 | §1.3 `text only` as a distinct predicate | ❌ | H-05 |
@@ -367,11 +367,11 @@ Dragging the left thumb moves a handle, shows a hover scale (`ui/index.tsx:254 h
 | §1.3 Boolean facet tri-state incl. "no cache pricing" | ⚠️ | `cache.require` handles unknown; `weights` folds `unknown` — H-04 |
 | §1.4 Counts recomputed per state, self-exclusion | ✅ | `facetCounts` with `ignore` (`filter.ts:212-232`) |
 | §1.4 Zero-count values dimmed but focusable | ❌ | L-25 |
-| §1.4 Never collapse applied state into a number | ✅ | `activeChips` is type+value (`filter.ts:325-395`) |
+| §1.4 Never collapse applied state into a number | ✅ | `activeChips` is type+value (`filter.ts:300-370`) |
 | §1.5 Sticky applied strip, 2 rows, `+N more` popover, Clear all | ❌ | H-10 |
 | §1.6 Dual-thumb log price slider + histogram behind the track | ✅ | `Range log` (`ui/index.tsx:216-257`), `PriceHistogram` |
 | §1.6 Histogram 32 px, selected-span tint, tick snapping, editable fields | ❌ | M-12 |
-| §1.7 Empty state with ranked repair path and predicted count | ✅ | `App.tsx:713-750`, `diagnose` (`filter.ts:464-476`) — the dossier's own example is nearly verbatim |
+| §1.7 Empty state with ranked repair path and predicted count | ✅ | `App.tsx:713-750`, `diagnose` (`filter.ts:439-451`) — the dossier's own example is nearly verbatim |
 | §1.8 Command palette with visible trigger | ❌ | M-21 |
 | §2.1 Scatter / bars / gated radar choice | ✅ | `Scatter.tsx`, `RankingBars`, `BenchmarkRadar` |
 | §2.2 X log₁₀ blended, axis title states log scale | ✅ | `Scatter.tsx:298-306` |
@@ -400,7 +400,7 @@ Dragging the left thumb moves a handle, shows a hover scale (`ui/index.tsx:254 h
 | §7.5 Coverage rendered inline, facets gated on it | ✅ | `FilterRail.tsx:117-123, 462` |
 | §7.5 3-way openness control, `unknown` surfaced | ❌ | H-04 |
 
-Score: **7 ❌ and 8 ⚠️** against 33 checked rules; everything the dossier specified *analytically* (frontier, diagnostics, counts, log axis, virtualisation, reduced motion) shipped; almost everything it specified *structurally* (width/overflow, sticky planes, ARIA, legends, mobile) did not.
+Score: **15 ❌, 8 ⚠️, 21 ✅** against 44 checked rules; everything the dossier specified *analytically* (frontier, diagnostics, counts, log axis, virtualisation, reduced motion) shipped; almost everything it specified *structurally* (width/overflow, sticky planes, ARIA, legends, mobile) did not.
 
 ---
 
@@ -429,7 +429,7 @@ Score: **7 ❌ and 8 ⚠️** against 33 checked rules; everything the dossier s
   "interface_type_note": "Dark data-dense comparison dashboard (468 models, 10 facets, scatter + virtualised table + compare view). Parts 1, 2, 4 evaluated; Part 3 for typography/colour and Part 6 for accessibility/trust. Part 5 skipped (no AI-specific signalling).",
   "overall_score": 0,
   "band": "poor",
-  "score_note": "Saturated: 2 critical (-30), 8 warning (-56), 17 suggestion (-51) = -137 under the skill's linear model, which assumes <=8 findings. Practical band: fair. Ordered severity profile: 2 blocker / 8 high / 12 medium / 5 low.",
+  "score_note": "Saturated: 2 critical (-30), 8 warning (-56), 19 suggestion (-57) = -143 under the skill's linear model, which assumes <=8 findings. Practical band: fair. Ordered severity profile: 2 blocker / 8 high / 12 medium / 5 low.",
   "findings": [
     {"id": "B-01", "principle": {"code": "F.4.2.01", "slug": "responsive-design", "title": "Responsive Adaptation", "part": "part-4"}, "severity": "critical", "message": "Table columns are clipped with no horizontal scroll below ~1374px viewport; SOM (the default sort column) is unreachable at 1366px and the table is 60% clipped below 1024px. No mobile card fallback.", "remediation": "Wrap header+rows in a min-w-[1038px] div inside overflow-auto; sticky first column; default 9 columns; card list below md.", "business_impact": null},
     {"id": "B-02", "principle": {"code": "F.6.1.01", "slug": "accessibility", "title": "Accessibility", "part": "part-6"}, "severity": "critical", "message": "Scatter marks carry onClick only: no tabIndex/role/aria-label, SVG is role=img, tooltip is hover-only, no figure/figcaption and no table alternative. Keyboard and AT users cannot read or operate the hero chart.", "remediation": "Roving focus with arrow keys, per-mark aria-label, aria-live line, visible focus ring, Table|Chart toggle, figure/figcaption.", "business_impact": null},

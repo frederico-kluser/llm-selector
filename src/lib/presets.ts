@@ -17,6 +17,7 @@ export const filtersSchema = z.object({
     })
     .default({ mode: "all", values: [] }),
   output: z.array(outputSchema).default([]),
+  textOnly: z.boolean().default(false),
   weights: z.enum(["any", "open", "closed"]).default("any"),
   price: z
     .object({
