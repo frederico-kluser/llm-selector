@@ -33,6 +33,7 @@ export function encodeState({
   if (filters.cache.require) params.set("c", String(filters.cache.max));
   if (filters.cache.minDiscount) params.set("cd", String(filters.cache.minDiscount));
   if (filters.minContext) params.set("cx", String(filters.minContext));
+  if (filters.minArenaElo) params.set("elo", String(filters.minArenaElo));
   if (filters.requireScored) params.set("sc", "1");
   const mins = Object.entries(filters.mins).filter(([, value]) => value > 0);
   if (mins.length) params.set("b", mins.map(([key, value]) => `${key}:${value}`).join(","));
@@ -97,6 +98,8 @@ export function decodeState(search: string): Partial<UrlState> {
   if (cd) filters.cache.minDiscount = Number(cd) || 0;
   const cx = params.get("cx");
   if (cx) filters.minContext = Number(cx) || 0;
+  const elo = params.get("elo");
+  if (elo) filters.minArenaElo = Number(elo) || 0;
   if (params.get("sc") === "1") filters.requireScored = true;
   const b = params.get("b");
   if (b) {
@@ -131,7 +134,7 @@ export function decodeState(search: string): Partial<UrlState> {
     }
   }
   const v = params.get("v");
-  if (v === "explore" || v === "compare" || v === "presets") out.view = v;
+  if (v === "explore" || v === "compare" || v === "probe" || v === "presets") out.view = v;
   const sel = params.get("sel");
   if (sel) out.selected = sel.split(",").filter(Boolean);
   return out;

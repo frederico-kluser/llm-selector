@@ -156,6 +156,39 @@ export function matchAa(orModel, index) {
   return { row: null, matchedBy: "none", confidence: null };
 }
 
+/**
+ * OpenRouter publishes Design Arena results per arena/category: Elo, win rate and rank.
+ * Elo is a different scale from the 0–100 indices, so it is kept in its own object instead
+ * of being squeezed into `benchmarks`.
+ */
+function extractDesignArena(orModel) {
+  const rows = orModel?.benchmarks?.design_arena;
+  if (!Array.isArray(rows) || rows.length === 0) return null;
+  const clean = rows.filter((row) => row && typeof row === "object");
+  const elos = clean.map((row) => row.elo).filter((value) => typeof value === "number");
+  const wins = clean.map((row) => row.win_rate).filter((value) => typeof value === "number");
+  const ranks = clean.map((row) => row.rank).filter((value) => typeof value === "number");
+  if (elos.length === 0) return null;
+  const mean = (values) => values.reduce((sum, value) => sum + value, 0) / values.length;
+  return {
+    bestElo: Math.max(...elos),
+    avgElo: Math.round(mean(elos) * 10) / 10,
+    avgWinRate: wins.length ? Math.round(mean(wins) * 10) / 10 : null,
+    bestRank: ranks.length ? Math.min(...ranks) : null,
+    samples: clean.length,
+    categories: clean
+      .map((row) => ({
+        arena: row.arena ?? null,
+        category: row.category ?? null,
+        elo: typeof row.elo === "number" ? row.elo : null,
+        winRate: typeof row.win_rate === "number" ? row.win_rate : null,
+        rank: typeof row.rank === "number" ? row.rank : null,
+      }))
+      .sort((a, b) => (b.elo ?? 0) - (a.elo ?? 0))
+      .slice(0, 12),
+  };
+}
+
 function buildFeatures(orModel, pricing) {
   const params = new Set(orModel?.supported_parameters ?? []);
   const outputs = new Set(orModel?.architecture?.output_modalities ?? []);
@@ -250,6 +283,7 @@ export function buildModel(orModel, aaMatch, feedMeta = {}) {
     features: buildFeatures(orModel, pricing),
     benchmarks,
     benchmarkSources,
+    designArena: extractDesignArena(orModel),
     aa: row
       ? {
           slug: row.slug,
@@ -362,6 +396,10 @@ export function buildCatalog({ orModels, aaFeed = null, orMeta = {} }) {
       closed: models.filter((m) => m.openness === "closed").length,
       unknown: models.filter((m) => m.openness === "unknown").length,
       free: models.filter((m) => m.pricing.prompt === 0 && m.pricing.completion === 0).length,
+      withDesignArena: models.filter((m) => m.designArena !== null).length,
+      designArenaCategories: [
+        ...new Set(models.flatMap((m) => (m.designArena?.categories ?? []).map((c) => c.category))),
+      ].length,
       withCache: models.filter((m) => m.pricing.cacheRead !== null).length,
       deprecated: models.filter((m) => m.deprecated).length,
       byModality: modalityCounts,

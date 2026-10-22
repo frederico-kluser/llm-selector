@@ -517,6 +517,25 @@ export function FilterRail({
           )}
         </Section>
 
+        <Section title="Design Arena (OpenRouter)" defaultOpen={false}>
+          <Label hint={filters.minArenaElo ? `≥ ${filters.minArenaElo} Elo` : "off"}>
+            Minimum Elo
+          </Label>
+          <SingleRange
+            value={filters.minArenaElo}
+            min={0}
+            max={1600}
+            step={10}
+            onValueChange={(minArenaElo) => onPatch({ minArenaElo })}
+          />
+          <EmptyHint>
+            {catalog.stats.withDesignArena ?? 0} models have OpenRouter arena results across{" "}
+            {catalog.stats.designArenaCategories ?? 0} categories (websites, games, dataviz, SVG…).
+            Elo is a separate scale from the 0–100 indices, so it is filtered here and shown on the
+            model card.
+          </EmptyHint>
+        </Section>
+
         <Section title="Capabilities" defaultOpen={false}>
           <div className="flex flex-wrap gap-1.5">
             {FEATURES.map((feature) => (

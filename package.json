@@ -1,6 +1,6 @@
 {
   "name": "llm-selector",
-  "version": "0.2.1",
+  "version": "0.3.0",
   "type": "module",
   "description": "Local-first LLM selector: filter 470+ OpenRouter models by modality, openness, price, cache pricing and benchmarks, compare on charts, save presets. Run with npx llm-selector.",
   "license": "MIT",

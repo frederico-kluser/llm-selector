@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 
+import { benchmarksHandler } from "../shared/api-core.mjs";
 import { buildCatalog, buildModel, matchAa } from "../shared/catalog.mjs";
 import { normalizeLegacyRow, normalizeNewRow } from "../shared/aa.mjs";
 import {
@@ -261,5 +262,53 @@ describe("Artificial Analysis adapters", () => {
     expect(row.scores.terminalbench).toBe(59.6);
     expect(row.creator).toBe("anthropic");
     expect(row.speed.ttfaSeconds).toBeNull();
+  });
+});
+
+
+/* --------------------------------------------------------- design arena */
+
+describe("OpenRouter Design Arena", () => {
+  const arenaModel = orModel({
+    benchmarks: {
+      artificial_analysis: { intelligence_index: 57.6 },
+      design_arena: [
+        { arena: "models", category: "website", elo: 1335, win_rate: 57.6, rank: 3 },
+        { arena: "models", category: "3d", elo: 1476, win_rate: 72, rank: 1 },
+        { arena: "agents", category: "spreadsheet", elo: 1381, win_rate: 69.9, rank: 2 },
+      ],
+    },
+  });
+
+  it("aggregates Elo, win rate and rank without touching the 0-100 indices", () => {
+    const model = buildModel(arenaModel, { row: null, matchedBy: "none", confidence: null });
+    expect(model.designArena.bestElo).toBe(1476);
+    expect(model.designArena.bestRank).toBe(1);
+    expect(model.designArena.samples).toBe(3);
+    expect(model.designArena.avgWinRate).toBeCloseTo(66.5, 1);
+    expect(model.designArena.categories[0].category).toBe("3d");
+    expect(model.benchmarks.intelligence).toBe(57.6);
+  });
+
+  it("stays null when OpenRouter has no arena rows", () => {
+    const model = buildModel(orModel(), { row: null, matchedBy: "none", confidence: null });
+    expect(model.designArena).toBeNull();
+  });
+
+  it("counts arena coverage in the catalogue stats", () => {
+    const catalog = buildCatalog({ orModels: [arenaModel] });
+    expect(catalog.stats.withDesignArena).toBe(1);
+    expect(catalog.stats.designArenaCategories).toBe(3);
+  });
+});
+
+describe("OpenRouter benchmark feed handler", () => {
+  it("refuses without a key instead of leaking a generic error", async () => {
+    const previous = process.env.OPENROUTER_API_KEY;
+    delete process.env.OPENROUTER_API_KEY;
+    const result = await benchmarksHandler({ headers: {}, query: { source: "design-arena" } });
+    expect(result.status).toBe(401);
+    expect(String(result.body.error)).toMatch(/key/i);
+    if (previous) process.env.OPENROUTER_API_KEY = previous;
   });
 });

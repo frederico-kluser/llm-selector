@@ -17,6 +17,15 @@ code (MIT) and the data (theirs).
 - If you display OpenRouter-derived numbers publicly, attribute them:
   `Source: OpenRouter (openrouter.ai), as of <date>.`
 
+### OpenRouter rankings & benchmark feed
+
+The per-model benchmark feed (`/api/v1/benchmarks`, which returns Artificial Analysis indices, Design
+Arena rows and OpenRouter's own task benchmarks) and the rankings datasets are licensed
+**CC BY 4.0**. The app renders the citation OpenRouter returns in `meta.citation`, e.g.
+`Source: OpenRouter (openrouter.ai/rankings), as of <date>.` — keep it, plus "Licensed under CC BY
+4.0." when you republish those numbers. Per-user data is **not** covered by that licence, which is
+why the performance probe stays in the user's own browser.
+
 ## Artificial Analysis
 
 - LLM Selector never ships, commits, or bundles Artificial Analysis data. Benchmark values are fetched at

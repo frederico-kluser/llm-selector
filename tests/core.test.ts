@@ -146,6 +146,25 @@ describe("filter engine", () => {
     expect(applyFilters(models, filters({ weights: "closed" }))).toHaveLength(1);
   });
 
+  it("filters by Design Arena Elo and ignores models without arena data", () => {
+    const arena = makeModel({
+      id: "arena/model",
+      designArena: {
+        bestElo: 1476,
+        avgElo: 1400,
+        avgWinRate: 65,
+        bestRank: 1,
+        samples: 3,
+        categories: [],
+      },
+    });
+    const withArena = [...models, arena];
+    expect(applyFilters(withArena, filters({ minArenaElo: 1300 })).map((m) => m.id)).toEqual([
+      "arena/model",
+    ]);
+    expect(applyFilters(withArena, filters({ minArenaElo: 0 }))).toHaveLength(5);
+  });
+
   it("never treats a missing price as $0", () => {
     const unpriced = makeModel({ id: "no/price", pricing: { ...makeModel().pricing, blended: null, prompt: null, completion: null } });
     expect(matches(unpriced, filters({ price: { ...DEFAULT_FILTERS.price, max: 1, includeUnpriced: false } }))).toBe(false);
