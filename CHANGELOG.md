@@ -4,7 +4,48 @@ All notable changes to this project are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and this project adheres to
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.3.0] - 2026-10-22
+
+### Added
+
+- **Vercel deployment.** `vercel.json` + five Node functions (`catalog`, `providers`, `account`,
+  `benchmarks`, `health`) sharing one `api-core` with the local server; the SPA fallback excludes
+  `/api/` so a bad endpoint 404s instead of returning HTML with 200.
+- **Measured performance ("My model").** A streamed probe using the visitor's own OpenRouter key
+  reports TTFT, output tokens/second, end-to-end latency, token counts and the exact billed cost —
+  stored in the browser only, next to the published medians.
+- **OpenRouter benchmark feed.** `/api/v1/benchmarks` proxied server-side (Artificial Analysis,
+  Design Arena and OpenRouter task benchmarks) with OpenRouter's own citation and `as_of`.
+- **Design Arena.** Elo, win rate and rank across 26 categories for 180 models, filterable by
+  minimum Elo and expanded per category on the model card.
+- **Automatic refresh.** The catalogue revalidates on load, when the tab regains focus and every
+  five minutes; source and freshness stay visible.
+
+### Changed
+
+- Catalogue responses are CDN-cacheable only when built from the server's own key; a response
+  personalised by a caller-supplied `x-aa-key` is `private`, because custom headers are not part of
+  a cache key.
+
+### Features
+- deploy on Vercel with live refresh and measured performance ([e125d5e](https://github.com/frederico-kluser/llm-selector/commit/e125d5e))
+
+### Build & CI
+- **oss:** allow single-maintainer reviews (0 approvals) (#14) ([427584c](https://github.com/frederico-kluser/llm-selector/commit/427584c))
+- **ci:** pin the remaining action references by SHA (#13) ([3ab86fe](https://github.com/frederico-kluser/llm-selector/commit/3ab86fe))
+
 ## [0.2.1] - 2026-10-22
+
+### Added
+
+  `benchmarks`, `health`) sharing one `api-core` with the local server; SPA fallback excludes `/api/`
+  so a bad endpoint 404s instead of returning HTML with 200.
+
+### Changed
+
+- Catalogue responses are CDN-cacheable only when built from the server's own key; a response
+  personalised by a caller-supplied `x-aa-key` is `private`, because custom headers are not part of
+  a cache key.
 
 ### Bug Fixes
 - **npm:** keep provenance in CI only and document publishing (#11) ([2bec208](https://github.com/frederico-kluser/llm-selector/commit/2bec208))
