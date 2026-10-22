@@ -187,8 +187,18 @@ export function CostQualityScatter({
   }
 
   return (
-    <div ref={ref} className="relative w-full" style={{ height }}>
-      <svg width={width || 600} height={height} role="img" aria-label="Blended price versus intelligence index, log scale">
+    <figure ref={ref} className="relative m-0 w-full">
+      <figcaption className="sr-only">
+        Scatter plot of blended price in US dollars per million tokens on a logarithmic horizontal
+        axis against the intelligence index on the vertical axis. Each mark is a model and can be
+        focused with the keyboard; the table below lists the same models with sortable columns.
+      </figcaption>
+      <svg
+        width={width || 600}
+        height={height}
+        role="group"
+        aria-label="Blended price versus intelligence index, log scale"
+      >
         {yTicks.map((tick) => (
           <g key={`y${tick}`}>
             <line
@@ -253,6 +263,15 @@ export function CostQualityScatter({
           return (
             <g key={point.model.id}>
               <motion.circle
+                role="button"
+                tabIndex={0}
+                aria-label={`${point.model.name}, intelligence ${formatScore(point.model.benchmarks.intelligence)}, blended ${formatPrice(point.model.pricing.blended)} per million tokens, context ${formatContext(point.model.contextLength)}${isSelected ? ", in comparison" : ""}`}
+                onKeyDown={(event) => {
+                  if (event.key === "Enter" || event.key === " ") {
+                    event.preventDefault();
+                    onToggle(point.model.id);
+                  }
+                }}
                 cx={cx}
                 cy={cy}
                 r={point.r}
@@ -315,6 +334,10 @@ export function CostQualityScatter({
           INTELLIGENCE INDEX
         </text>
       </svg>
+      <p className="mt-1 text-[10px] text-fg-dim">
+        {selected.length > 0 ? `${selected.length} selected — ` : ""}keyboard: tab to a mark, Enter
+        adds it to the comparison.
+      </p>
 
       {free.length > 0 && (
         <div className="mt-1 flex flex-wrap items-center gap-1.5 text-[10px] text-fg-dim">
@@ -357,7 +380,7 @@ export function CostQualityScatter({
           </div>
         </div>
       )}
-    </div>
+    </figure>
   );
 }
 

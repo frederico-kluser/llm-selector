@@ -10,11 +10,13 @@ import {
   Range,
   Section,
   Segmented,
+  SingleRange,
   Switch,
   Tooltip,
 } from "@/components/ui";
 import { formatCompactPrice, formatContext, formatPrice, formatScore } from "@/lib/format";
 import {
+  DEFAULT_FILTERS,
   PRICE_AXES,
   type FacetCounts,
   type Filters,
@@ -220,9 +222,9 @@ export function FilterRail({
           </div>
           <div className="mt-2 flex flex-wrap gap-1.5">
             <Chip
-              active={filters.input.values.length === 1 && filters.input.values[0] === "text"}
-              onClick={() => onPatch({ input: { mode: "all", values: ["text"] } })}
-              title="Only models that accept text and nothing else"
+              active={filters.textOnly}
+              onClick={() => onPatch({ textOnly: !filters.textOnly })}
+              title="Models that accept text and nothing else, and return only text"
             >
               Text-only
             </Chip>
@@ -284,6 +286,7 @@ export function FilterRail({
                       (counts.weights.closed ?? 0) +
                       (counts.weights.unknown ?? 0)
                     : (counts.weights[option.id] ?? 0)}
+                  {option.id === "any" && (counts.weights.unknown ?? 0) > 0 ? ` (${counts.weights.unknown} unknown)` : ""}
                 </span>
               </button>
             ))}
@@ -330,7 +333,16 @@ export function FilterRail({
                 min={priceBounds.min}
                 max={priceBounds.max}
                 onValueChange={([min, max]) =>
-                  onPatch({ price: { ...filters.price, min, max, freeOnly: false } })
+                  onPatch({
+                    price: {
+                      ...filters.price,
+                      min,
+                      // snap to the sentinel when the thumb is at the far end, so a no-op
+                      // drag does not emit a phantom "price ≤ $263" chip
+                      max: max >= priceBounds.max ? DEFAULT_FILTERS.price.max : max,
+                      freeOnly: false,
+                    },
+                  })
                 }
                 ariaLabel={["Minimum price", "Maximum price"]}
               />
@@ -407,15 +419,14 @@ export function FilterRail({
             <Label hint={filters.cache.minDiscount ? `≥ ${filters.cache.minDiscount}%` : "off"}>
               Cache saves at least
             </Label>
-            <Range
-              value={[0, filters.cache.minDiscount]}
+            <SingleRange
+              value={filters.cache.minDiscount}
               min={0}
               max={100}
               step={5}
-              onValueChange={([, minDiscount]) =>
+              onValueChange={(minDiscount) =>
                 onPatch({ cache: { ...filters.cache, minDiscount } })
               }
-              ariaLabel={["Minimum", "Discount"]}
             />
           </div>
           <EmptyHint>
@@ -463,18 +474,21 @@ export function FilterRail({
                       >
                         {BENCHMARK_LABELS[benchmark.key] ?? benchmark.label}
                       </Label>
-                      <Range
-                        value={[0, value]}
+                      <SingleRange
+                        value={value}
                         min={0}
                         max={100}
                         step={1}
-                        onValueChange={([, next]) => setMin(benchmark.key, next)}
-                        ariaLabel={["Minimum", benchmark.label]}
+                        onValueChange={(next) => setMin(benchmark.key, next)}
                       />
                     </div>
                   );
                 })}
               </div>
+              <p className="mt-2 text-[10.5px] leading-relaxed text-fg-dim">
+                Floors hide models with no score on that axis — they are excluded, not treated as
+                zero.
+              </p>
               {otherBenchmarks.length > 0 && (
                 <details className="mt-2.5">
                   <summary className="cursor-pointer text-[11px] text-fg-dim hover:text-fg">
@@ -486,13 +500,12 @@ export function FilterRail({
                       return (
                         <div key={benchmark.key}>
                           <Label hint={`≥ ${value}`}>{BENCHMARK_LABELS[benchmark.key] ?? benchmark.label}</Label>
-                          <Range
-                            value={[0, value]}
+                          <SingleRange
+                            value={value}
                             min={0}
                             max={100}
                             step={1}
-                            onValueChange={([, next]) => setMin(benchmark.key, next)}
-                            ariaLabel={["Minimum", benchmark.label]}
+                            onValueChange={(next) => setMin(benchmark.key, next)}
                           />
                         </div>
                       );
