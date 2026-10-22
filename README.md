@@ -1,5 +1,10 @@
 # LLM Selector
 
+[![ci](https://github.com/frederico-kluser/llm-selector/actions/workflows/ci.yml/badge.svg)](https://github.com/frederico-kluser/llm-selector/actions/workflows/ci.yml)
+[![npm](https://img.shields.io/npm/v/llm-selector.svg)](https://www.npmjs.com/package/llm-selector)
+[![license: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![OpenSSF Scorecard](https://api.securityscorecards.dev/projects/github.com/frederico-kluser/llm-selector/badge)](https://securityscorecards.dev/viewer/?uri=github.com/frederico-kluser/llm-selector)
+
 **Find the model that fits your constraints, not the one on the leaderboard.**
 
 LLM Selector is a local-first model picker for the OpenRouter catalogue. Filter 460+ chat models by
@@ -32,6 +37,16 @@ LLM Selector treats that as a filter problem plus a scoring problem:
   matched onto a model by heuristic carry a confidence label.
 
 ## Quickstart
+
+Run it without cloning anything:
+
+```bash
+npx llm-selector              # http://127.0.0.1:8899
+npx llm-selector --port 3000 --no-open
+ARTIFICIAL_ANALYSIS_API_KEY=aa_… npx llm-selector
+```
+
+From source:
 
 ```bash
 git clone https://github.com/frederico-kluser/llm-selector.git
@@ -150,6 +165,7 @@ normalisation, and baseline-anchored bars. No charting library, no runtime confi
 | `pnpm test` | Unit tests (33 specs) |
 | `pnpm typecheck` | `tsc --noEmit` |
 | `pnpm catalog` | Refresh only the snapshot |
+| `npx llm-selector` | Run the published package (after `pnpm build`) |
 
 ## Status
 

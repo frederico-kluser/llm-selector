@@ -42,3 +42,6 @@ pesquisas/
 
 # typescript incremental build info
 *.tsbuildinfo
+
+# npm pack output
+*.tgz

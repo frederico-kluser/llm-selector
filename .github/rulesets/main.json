@@ -2,7 +2,14 @@
   "name": "main",
   "target": "branch",
   "enforcement": "active",
-  "conditions": { "ref_name": { "include": ["~DEFAULT_BRANCH"], "exclude": [] } },
+  "conditions": {
+    "ref_name": {
+      "include": [
+        "~DEFAULT_BRANCH"
+      ],
+      "exclude": []
+    }
+  },
   "rules": [
     {
       "type": "pull_request",
@@ -13,7 +20,9 @@
         "require_last_push_approval": false,
         "required_review_thread_resolution": false,
         "automatic_copilot_code_review_enabled": false,
-        "allowed_merge_methods": ["squash"]
+        "allowed_merge_methods": [
+          "squash"
+        ]
       }
     },
     {
@@ -21,11 +30,21 @@
       "parameters": {
         "strict_required_status_checks_policy": false,
         "do_not_enforce_on_create": false,
-        "required_status_checks": [{ "context": "verify" }]
+        "required_status_checks": [
+          {
+            "context": "build"
+          }
+        ]
       }
     },
-    { "type": "non_fast_forward" },
-    { "type": "deletion" },
-    { "type": "required_linear_history" }
+    {
+      "type": "non_fast_forward"
+    },
+    {
+      "type": "deletion"
+    },
+    {
+      "type": "required_linear_history"
+    }
   ]
 }

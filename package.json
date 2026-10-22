@@ -1,11 +1,13 @@
 {
   "name": "llm-selector",
-  "version": "0.1.0",
-  "private": false,
+  "version": "0.2.0",
   "type": "module",
-  "description": "Open-source LLM selector: filter 470+ OpenRouter models by modality, openness, price, cache pricing and benchmarks, compare on charts, save presets, export your config.",
+  "description": "Local-first LLM selector: filter 470+ OpenRouter models by modality, openness, price, cache pricing and benchmarks, compare on charts, save presets. Run with npx llm-selector.",
   "license": "MIT",
   "dependencies": {
+    "express": "^5.3.0"
+  },
+  "devDependencies": {
     "@fontsource-variable/geist": "^5.3.0",
     "@fontsource-variable/geist-mono": "^5.3.0",
     "@radix-ui/react-checkbox": "^1.4.1",
@@ -21,30 +23,28 @@
     "@radix-ui/react-switch": "^1.4.1",
     "@radix-ui/react-tabs": "^1.2.1",
     "@radix-ui/react-tooltip": "^1.4.1",
+    "@tailwindcss/vite": "^4.3.3",
+    "@types/node": "^26.6.5",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "@vitejs/plugin-react": "^6.1.2",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
+    "concurrently": "^10.0.6",
+    "express": "^5.3.0",
     "lucide-react": "^1.61.0",
     "motion": "^14.5.0",
     "react": "^19.3.1",
     "react-dom": "^19.3.1",
     "sonner": "^2.0.8",
     "tailwind-merge": "^3.7.0",
-    "zod": "^4.6.7",
-    "zustand": "^5.0.15"
-  },
-  "devDependencies": {
-    "@tailwindcss/vite": "^4.3.3",
-    "@types/node": "^26.6.5",
-    "@types/react": "^19.3.0",
-    "@types/react-dom": "^19.3.0",
-    "@vitejs/plugin-react": "^6.1.2",
-    "concurrently": "^10.0.6",
-    "express": "^5.3.0",
     "tailwindcss": "^4.3.3",
     "tsx": "^4.23.15",
     "typescript": "^7.0.2",
     "vite": "^8.3.5",
-    "vitest": "^5.0.5"
+    "vitest": "^5.0.5",
+    "zod": "^4.6.7",
+    "zustand": "^5.0.15"
   },
   "scripts": {
     "dev": "concurrently -n api,web -c magenta,cyan \"node --env-file-if-exists=.env server/index.mjs\" \"vite\"",
@@ -57,7 +57,9 @@
     "catalog": "node --env-file-if-exists=.env scripts/build-catalog.mjs",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
-    "test:ci": "vitest run --reporter=dot"
+    "test:ci": "vitest run --reporter=dot",
+    "prepublishOnly": "npm run build",
+    "prepack": "npm run build"
   },
   "packageManager": "pnpm@11.7.0",
   "engines": {
@@ -77,8 +79,39 @@
     "artificial-analysis",
     "model-selection",
     "benchmarks",
+    "llm-selector",
+    "model-picker",
+    "cli",
+    "dashboard",
     "react",
     "vite",
-    "dashboard"
-  ]
+    "ai"
+  ],
+  "bin": {
+    "llm-selector": "./bin/llm-selector.mjs"
+  },
+  "files": [
+    "bin/",
+    "dist/",
+    "server/",
+    "shared/",
+    "public/favicon.svg",
+    "README.md",
+    "LICENSE",
+    "NOTICE.md",
+    "CHANGELOG.md",
+    "!dist/data/catalog.json"
+  ],
+  "exports": {
+    ".": "./shared/catalog.mjs",
+    "./server": "./server/index.mjs",
+    "./package.json": "./package.json"
+  },
+  "main": "./shared/catalog.mjs",
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  },
+  "author": "Frederico Kluser",
+  "funding": null
 }
