@@ -39,3 +39,6 @@ pesquisas/
 
 # agent scratch
 .agent-tmp/
+
+# typescript incremental build info
+*.tsbuildinfo
