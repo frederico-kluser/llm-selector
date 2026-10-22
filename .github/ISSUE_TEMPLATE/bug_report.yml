@@ -1,0 +1,43 @@
+name: Bug report
+description: Something behaves incorrectly
+labels: [bug]
+body:
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened
+      description: Include the filter state if relevant (the URL is a full serialisation of the view).
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: What you expected
+    validations:
+      required: true
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - Filters / facet counts
+        - Charts
+        - Table
+        - Presets / import / export
+        - Data / joining
+        - API server
+        - Other
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Version or commit
+      placeholder: 0.1.0
+  - type: checkboxes
+    id: keys
+    attributes:
+      label: Confirmation
+      options:
+        - label: I have not pasted an API key into this report
+          required: true

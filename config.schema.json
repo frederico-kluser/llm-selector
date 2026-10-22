@@ -1,0 +1,116 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://raw.githubusercontent.com/frederico-kluser/som-llm-selector/main/config.schema.json",
+  "title": "SOM configuration export",
+  "description": "A portable SOM view: filters, sort, score weights, selection and presets. API keys are never included.",
+  "type": "object",
+  "additionalProperties": true,
+  "properties": {
+    "$schema": { "type": "string" },
+    "app": { "type": "string", "const": "som-llm-selector" },
+    "version": { "type": "integer", "const": 1 },
+    "exportedAt": { "type": "string", "format": "date-time" },
+    "view": { "type": "string", "enum": ["explore", "compare", "presets"] },
+    "filters": { "$ref": "#/definitions/filters" },
+    "sort": {
+      "type": "object",
+      "properties": {
+        "key": {
+          "type": "string",
+          "enum": ["som", "intelligence", "coding", "agentic", "price", "cacheRead", "contextLength", "created", "name", "speed", "value"]
+        },
+        "dir": { "type": "integer", "enum": [1, -1] }
+      }
+    },
+    "weights": {
+      "type": "object",
+      "description": "SOM score weights, 0-100 each.",
+      "properties": {
+        "quality": { "type": "number", "minimum": 0, "maximum": 100 },
+        "price": { "type": "number", "minimum": 0, "maximum": 100 },
+        "speed": { "type": "number", "minimum": 0, "maximum": 100 },
+        "context": { "type": "number", "minimum": 0, "maximum": 100 },
+        "cache": { "type": "number", "minimum": 0, "maximum": 100 }
+      },
+      "additionalProperties": false
+    },
+    "selected": {
+      "type": "array",
+      "description": "OpenRouter model ids in the compare tray (max 6).",
+      "items": { "type": "string", "pattern": "^~?[^/\\s]+/[^\\s]+$" },
+      "maxItems": 6
+    },
+    "presets": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "name"],
+        "properties": {
+          "id": { "type": "string", "minLength": 1 },
+          "name": { "type": "string", "minLength": 1, "maxLength": 80 },
+          "description": { "type": "string", "maxLength": 200 },
+          "createdAt": { "type": "string", "format": "date-time" },
+          "filters": { "$ref": "#/definitions/filters" },
+          "sort": { "type": "object" },
+          "weights": { "type": "object" }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "filters": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "q": { "type": "string" },
+        "input": {
+          "type": "object",
+          "properties": {
+            "mode": { "type": "string", "enum": ["all", "any"] },
+            "values": {
+              "type": "array",
+              "items": { "type": "string", "enum": ["text", "image", "audio", "video", "file"] }
+            }
+          }
+        },
+        "output": {
+          "type": "array",
+          "items": { "type": "string", "enum": ["text", "image", "audio", "embeddings"] }
+        },
+        "weights": { "type": "string", "enum": ["any", "open", "closed"] },
+        "price": {
+          "type": "object",
+          "properties": {
+            "min": { "type": "number", "minimum": 0 },
+            "max": { "type": "number", "minimum": 0 },
+            "axis": { "type": "string", "enum": ["blended", "prompt", "completion"] },
+            "includeUnpriced": { "type": "boolean" },
+            "freeOnly": { "type": "boolean" }
+          }
+        },
+        "cache": {
+          "type": "object",
+          "properties": {
+            "require": { "type": "boolean" },
+            "max": { "type": "number", "minimum": 0 },
+            "minDiscount": { "type": "number", "minimum": 0, "maximum": 100 }
+          }
+        },
+        "minContext": { "type": "number", "minimum": 0 },
+        "mins": {
+          "type": "object",
+          "description": "Minimum benchmark score per axis, 0-100.",
+          "additionalProperties": { "type": "number", "minimum": 0, "maximum": 100 }
+        },
+        "requireScored": { "type": "boolean" },
+        "features": { "type": "array", "items": { "type": "string" } },
+        "creators": { "type": "array", "items": { "type": "string" } },
+        "maxAgeDays": { "type": "number", "minimum": 0 },
+        "hideDeprecated": { "type": "boolean" },
+        "hideAliases": { "type": "boolean" },
+        "hideBatch": { "type": "boolean" },
+        "hideFree": { "type": "boolean" }
+      }
+    }
+  }
+}

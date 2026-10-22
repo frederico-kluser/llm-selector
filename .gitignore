@@ -1,0 +1,41 @@
+# dependencies
+node_modules/
+.pnpm-store/
+
+# build output
+dist/
+dist-ssr/
+*.local
+
+# generated catalogue snapshot — fetched at build time, never vendored
+public/data/catalog.json
+
+# secrets
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# logs
+*.log
+npm-debug.log*
+pnpm-debug.log*
+
+# editor / OS
+.vscode/*
+!.vscode/extensions.json
+.idea/
+.DS_Store
+Thumbs.db
+
+# test output
+coverage/
+playwright-report/
+test-results/
+
+# Tavily deep-research protocol artefacts (local scratch)
+pesquisas/
+
+# agent scratch
+.agent-tmp/

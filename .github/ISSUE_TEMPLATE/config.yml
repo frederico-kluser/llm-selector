@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Data licensing question
+    url: https://github.com/frederico-kluser/som-llm-selector/blob/main/NOTICE.md
+    about: Read this first — OpenRouter and Artificial Analysis data have their own terms.
+  - name: Private security report
+    url: https://github.com/frederico-kluser/som-llm-selector/security/advisories/new
+    about: Please report vulnerabilities privately, not in a public issue.

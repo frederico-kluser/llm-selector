@@ -1,0 +1,22 @@
+name: Feature request
+description: Suggest a filter, chart, data source or workflow
+labels: [enhancement]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: The decision you are trying to make
+      description: Describe the real task, not only the widget you want.
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed change
+    validations:
+      required: true
+  - type: markdown
+    attributes:
+      value: |
+        If this adds a data source, include the endpoint, its licence/terms link, the attribution
+        line you would render, and whether it is CORS-callable from the browser.
