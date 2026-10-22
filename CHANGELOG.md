@@ -4,7 +4,26 @@ All notable changes to this project are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and this project adheres to
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+
+## [0.2.0] - 2026-10-22
+
+### Features
+
+- **npm package:** `npx llm-selector` runs the whole app locally from a 405 kB tarball — CLI bin,
+  prepack build, runtime dependency on `express` only, and the catalogue snapshot deliberately
+  excluded so no upstream data is redistributed.
+- **npm:** publish the app as an installable CLI package ([3e73337](https://github.com/frederico-kluser/llm-selector/commit/3e73337))
+
+### Bug Fixes
+- stop tracking the TypeScript build info file (#8) ([847cb69](https://github.com/frederico-kluser/llm-selector/commit/847cb69))
+- use the canonical MIT text so GitHub detects the licence (#6) ([f4af429](https://github.com/frederico-kluser/llm-selector/commit/f4af429))
+- chart strip clipping, facet focusability and chip labels (#5) ([1573839](https://github.com/frederico-kluser/llm-selector/commit/1573839))
+
+### Refactoring
+- rename the product to LLM Selector (#7) ([8aeda9f](https://github.com/frederico-kluser/llm-selector/commit/8aeda9f))
+
+### Documentation
+- document the accepted branch prefixes and ruleset-as-code (#4) ([aa0696d](https://github.com/frederico-kluser/llm-selector/commit/aa0696d))
 
 ### Changed
 
@@ -12,7 +31,7 @@ All notable changes to this project are documented here. The format follows
   the **fit score**, storage keys are namespaced `llm-selector.*`, and the JSON config records
   `app: "llm-selector"`.
 
-### Fixed
+### Accessibility & UI polish
 
 - The model table scrolls horizontally below ~1374 px with a sticky model column, and switches to
   cards under `md` instead of clipping the SOM column.
