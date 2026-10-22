@@ -23,6 +23,14 @@ All notable changes to this project are documented here. The format follows
 - rename the product to LLM Selector (#7) ([8aeda9f](https://github.com/frederico-kluser/llm-selector/commit/8aeda9f))
 
 ### Documentation
+
+- README "Publishing" section: local publish, trusted publishing (OIDC) and the `NPM_TOKEN`
+  environment secret; CONTRIBUTING "Releasing" runbook follows the `opensource-project` gates.
+
+### Fixed
+
+- `publishConfig.provenance` removed: provenance is an OIDC-only feature, so inheriting it from the
+  config made local `npm publish` fail with `EUSAGE`; CI now passes `--provenance` explicitly.
 - document the accepted branch prefixes and ruleset-as-code (#4) ([aa0696d](https://github.com/frederico-kluser/llm-selector/commit/aa0696d))
 
 ### Changed

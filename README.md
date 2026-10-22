@@ -167,6 +167,28 @@ normalisation, and baseline-anchored bars. No charting library, no runtime confi
 | `pnpm catalog` | Refresh only the snapshot |
 | `npx llm-selector` | Run the published package (after `pnpm build`) |
 
+## Publishing
+
+The package is release-driven: a `vX.Y.Z` tag → GitHub Release → `publish.yml`
+(`npm publish --provenance --access public` in the `production` environment).
+
+```bash
+# maintainer, once per machine
+npm login                      # or a granular token with publish rights
+npm publish --access public     # local publish (no provenance outside CI)
+```
+
+CI publishing needs one of:
+
+- **Trusted publishing (preferred, no secret):** on npmjs.com → package → Settings → Trusted
+  Publisher → GitHub Actions, repository `frederico-kluser/llm-selector`, workflow `publish.yml`.
+  After the first manual publish this removes the need for any token.
+- **`NPM_TOKEN`:** a granular automation token stored as an *environment* secret on `production`
+  (`gh secret set NPM_TOKEN --env production`). Without it the workflow skips with a notice.
+
+Never put a token in the repository, and never publish a version that already exists — the
+registry is immutable.
+
 ## Status
 
 Early (`0.x`). The JSON config format is versioned (`version: 1`) and validated with zod on import, but
