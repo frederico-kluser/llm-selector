@@ -72,7 +72,7 @@ export interface Sort {
 export const DEFAULT_SORT: Sort = { key: "som", dir: -1 };
 
 export const SORT_LABELS: Record<SortKey, string> = {
-  som: "SOM score",
+  som: "Fit score",
   intelligence: "Intelligence",
   coding: "Coding",
   agentic: "Agentic",
@@ -289,12 +289,12 @@ export function valueOf(model: LlmModel, sortKey: SortKey, somScore?: number): n
 export function sortModels(
   models: LlmModel[],
   sort: Sort,
-  somScores: Map<string, number> = new Map(),
+  fitScores: Map<string, number> = new Map(),
 ): LlmModel[] {
   const sorted = [...models];
   sorted.sort((a, b) => {
-    const av = valueOf(a, sort.key, somScores.get(a.id));
-    const bv = valueOf(b, sort.key, somScores.get(b.id));
+    const av = valueOf(a, sort.key, fitScores.get(a.id));
+    const bv = valueOf(b, sort.key, fitScores.get(b.id));
     // Missing data always sinks, regardless of direction — never sort `null` as zero.
     if (av === null && bv === null) return a.name.localeCompare(b.name);
     if (av === null) return 1;

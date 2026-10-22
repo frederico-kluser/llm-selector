@@ -1,18 +1,20 @@
-# SOM — LLM Selector
+# LLM Selector
 
 **Find the model that fits your constraints, not the one on the leaderboard.**
 
-SOM is a local-first model selector for the OpenRouter catalogue. Filter 460+ chat models by
+LLM Selector is a local-first model picker for the OpenRouter catalogue. Filter 460+ chat models by
 modality (text / image / audio / video / file), open vs proprietary weights, blended price, cache
 pricing, context window and benchmark floors — then compare what survives on a log-scale cost/quality
 scatter, a benchmark profile and a leaderboard. Save filter sets as presets, and move your whole setup
 in and out as JSON.
 
+> **Naming:** *SOM* is the system family — a system that orchestrates models (`jev`, `leya`); inside an LLM system you find the individual models (`gpt`, `opus`, …). This project is the **LLM Selector**: the thing that picks the model.
+>
 > Code: MIT. Data: see [Data sources & attribution](#data-sources--attribution). This is an
 > independent project — not affiliated with, endorsed by, or sponsored by OpenRouter or Artificial
 > Analysis.
 
-![SOM in the explore view](docs/screenshot.jpg)
+![LLM Selector in the explore view](docs/screenshot.jpg)
 
 ---
 
@@ -21,10 +23,10 @@ in and out as JSON.
 Every "best LLM" list answers a question you did not ask. The useful question is *"of the models I can
 actually call, which ones accept my input, cost what I can spend, and clear the quality bar I need?"*
 
-SOM treats that as a filter problem plus a scoring problem:
+LLM Selector treats that as a filter problem plus a scoring problem:
 
 - **Hard constraints** narrow the catalogue using only published facts.
-- **SOM score** ranks what remains with weights *you* set. It is computed **inside the current result
+- **fit score** ranks what remains with weights *you* set. It is computed **inside the current result
   set**, so it answers "which of these" rather than "which in absolute terms".
 - **Provenance is always visible.** A missing benchmark renders as `—`, never as `0`. Benchmarks
   matched onto a model by heuristic carry a confidence label.
@@ -32,8 +34,8 @@ SOM treats that as a filter problem plus a scoring problem:
 ## Quickstart
 
 ```bash
-git clone https://github.com/frederico-kluser/som-llm-selector.git
-cd som-llm-selector
+git clone https://github.com/frederico-kluser/llm-selector.git
+cd llm-selector
 pnpm install
 pnpm dev            # API on :8899, web on :5173
 ```

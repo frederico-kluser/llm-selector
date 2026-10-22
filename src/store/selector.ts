@@ -229,7 +229,7 @@ export const useSelector = create<SelectorState>()(
       },
     }),
     {
-      name: "som.selector.v1",
+      name: "llm-selector.view.v1",
       storage: createJSONStorage(() => localStorage),
       partialize: (state) => ({
         filters: state.filters,

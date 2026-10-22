@@ -4,7 +4,7 @@ import { DEFAULT_FILTERS, DEFAULT_SORT, type Filters, type Sort } from "./filter
 import { DEFAULT_WEIGHTS, type ScoreWeights } from "./scoring";
 
 export const CONFIG_VERSION = 1;
-export const APP_ID = "som-llm-selector";
+export const APP_ID = "llm-selector";
 
 const modalitySchema = z.enum(["text", "image", "audio", "video", "file"]);
 const outputSchema = z.enum(["text", "image", "audio", "embeddings"]);
@@ -195,7 +195,7 @@ export function buildConfig({
   presets,
 }: BuildConfigArgs) {
   return {
-    $schema: "https://raw.githubusercontent.com/frederico-kluser/som-llm-selector/main/config.schema.json",
+    $schema: "https://raw.githubusercontent.com/frederico-kluser/llm-selector/main/config.schema.json",
     app: APP_ID,
     version: CONFIG_VERSION,
     exportedAt: new Date().toISOString(),

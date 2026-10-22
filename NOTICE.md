@@ -1,12 +1,12 @@
 # Notice — third-party data and services
 
-SOM is an independent, local-first tool. It is **not affiliated with, endorsed by, or sponsored by**
+LLM Selector is an independent, local-first tool. It is **not affiliated with, endorsed by, or sponsored by**
 OpenRouter or Artificial Analysis. Two different licences apply to the two things you get here: the
 code (MIT) and the data (theirs).
 
 ## OpenRouter
 
-- SOM reads the public model catalogue from `https://openrouter.ai/api/v1/models` at runtime.
+- LLM Selector reads the public model catalogue from `https://openrouter.ai/api/v1/models` at runtime.
 - The aggregated OpenRouter Data API is published under **CC BY 4.0**, with attribution to
   OpenRouter. The model catalogue endpoint carries no separate data licence, and the OpenRouter terms
   prohibit scraping the site — therefore **this repository commits no catalogue snapshot**. The
@@ -19,7 +19,7 @@ code (MIT) and the data (theirs).
 
 ## Artificial Analysis
 
-- SOM never ships, commits, or bundles Artificial Analysis data. Benchmark values are fetched at
+- LLM Selector never ships, commits, or bundles Artificial Analysis data. Benchmark values are fetched at
   **runtime with the operator's or user's own API key**, kept in a short-lived in-memory cache, and
   rendered for the person who supplied the key.
 - Attribution is displayed in the application footer and must remain visible in any fork:
@@ -43,4 +43,4 @@ the upstream project.
 ## Benchmarks named in the UI
 
 GPT, Claude, Gemini, Qwen, DeepSeek, Kimi, GLM, Mistral, Llama, Grok, Nemotron, MiniMax and other
-model names are trademarks of their respective owners. SOM displays them descriptively.
+model names are trademarks of their respective owners. LLM Selector displays them descriptively.

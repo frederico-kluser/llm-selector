@@ -8,7 +8,7 @@ export interface Keys {
   artificialAnalysis: string;
 }
 
-const KEY_STORAGE = "som.keys.v1";
+const KEY_STORAGE = "llm-selector.keys.v1";
 const EMPTY_KEYS: Keys = { openrouter: "", artificialAnalysis: "" };
 
 function parseKeys(raw: string | null): Keys | null {

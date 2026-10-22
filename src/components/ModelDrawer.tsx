@@ -265,7 +265,7 @@ export function ModelDrawer({
                     <div className="mt-2">
                       {!canUseApi && (
                         <p className="text-[11px] text-fg-dim">
-                          Provider stats need the SOM API server. Run <code className="numeric">pnpm dev</code>.
+                          Provider stats need the llm-selector API server. Run <code className="numeric">pnpm dev</code>.
                         </p>
                       )}
                       {providerError && <p className="text-[11px] text-bad">{providerError}</p>}
