@@ -88,7 +88,7 @@ async function getAaFeed({ apiKey, force = false }) {
 app.get("/api/health", (_req, res) => {
   res.json({
     ok: true,
-    service: "som-llm-selector",
+    service: "llm-selector",
     hasEnvAaKey: Boolean(ENV_AA_KEY),
     hasEnvOrKey: Boolean(ENV_OR_KEY),
     uptimeSeconds: Math.round(process.uptime()),
@@ -242,12 +242,12 @@ if (existsSync(dist)) {
   app.use((_req, res) => res.sendFile(join(dist, "index.html")));
 } else {
   app.get("/", (_req, res) =>
-    res.type("text/plain").send("SOM API is running. Build the app with `pnpm build`."),
+    res.type("text/plain").send("llm-selector API is running. Build the app with `pnpm build`."),
   );
 }
 
 app.listen(PORT, HOST, () => {
-  console.log(`SOM api   http://${HOST}:${PORT}`);
+  console.log(`llm-selector api   http://${HOST}:${PORT}`);
   console.log(`          artificial analysis key: ${ENV_AA_KEY ? "env ✓" : "not set (bring your own)"}`);
   console.log(`          openrouter key: ${ENV_OR_KEY ? "env ✓" : "not set (anonymous catalogue)"}`);
 });

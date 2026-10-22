@@ -6,6 +6,12 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+### Changed
+
+- The product is named **LLM Selector** (SOM is the system family it belongs to). The score is now
+  the **fit score**, storage keys are namespaced `llm-selector.*`, and the JSON config records
+  `app: "llm-selector"`.
+
 ### Fixed
 
 - The model table scrolls horizontally below ~1374 px with a sticky model column, and switches to

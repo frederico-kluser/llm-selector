@@ -43,8 +43,8 @@ async function getJson(url, { headers = {}, fetchImpl = fetch } = {}) {
 export async function fetchOpenRouter({ apiKey, fetchImpl, referer } = {}) {
   const headers = {
     // OpenRouter asks apps to identify themselves on every call.
-    "HTTP-Referer": referer ?? "https://github.com/frederico-kluser/som-llm-selector",
-    "X-OpenRouter-Title": "SOM - LLM Selector",
+    "HTTP-Referer": referer ?? "https://github.com/frederico-kluser/llm-selector",
+    "X-OpenRouter-Title": "LLM Selector",
     ...(apiKey ? { authorization: `Bearer ${apiKey}` } : {}),
   };
   const json = await getJson(OPENROUTER_MODELS_URL, { headers, fetchImpl });

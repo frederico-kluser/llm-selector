@@ -320,7 +320,7 @@ export function PresetsView({
       <div className="space-y-4">
         <div className="bezel">
           <div className="bezel-core p-3.5">
-            <span className="eyebrow">SOM score weights</span>
+            <span className="eyebrow">Fit score weights</span>
             <p className="mt-1 text-[11px] leading-relaxed text-fg-dim">
               Your priorities, applied within the current result set. Nothing is hidden — the score
               only reorders what the filters already allow.

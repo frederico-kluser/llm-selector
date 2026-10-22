@@ -61,11 +61,11 @@ function qualityOf(model: LlmModel): number | null {
 }
 
 /**
- * SOM score: a percentile-normalised blend of the five dimensions the user said they care
+ * Fit score: a percentile-normalised blend of the five dimensions the user said they care
  * about. It is computed *within the current result set*, so it always answers
  * "which of these is best for me" rather than "which is best in absolute terms".
  */
-export function computeSomScores(
+export function computeFitScores(
   models: LlmModel[],
   weights: ScoreWeights,
 ): Map<string, ScoreParts> {
@@ -177,7 +177,7 @@ function median(values: number[]): number {
 /** Three opinionated picks that summarise the current result set. */
 export function recommend(
   models: LlmModel[],
-  somScores: Map<string, ScoreParts>,
+  fitScores: Map<string, ScoreParts>,
 ): Recommendation[] {
   if (!models.length) return [];
   const picks: Recommendation[] = [];
@@ -187,14 +187,14 @@ export function recommend(
   const withPrice = models.filter((m) => m.pricing.blended !== null);
 
   const bestSom = [...models]
-    .filter((m) => somScores.has(m.id))
-    .sort((a, b) => (somScores.get(b.id)?.score ?? 0) - (somScores.get(a.id)?.score ?? 0))[0];
+    .filter((m) => fitScores.has(m.id))
+    .sort((a, b) => (fitScores.get(b.id)?.score ?? 0) - (fitScores.get(a.id)?.score ?? 0))[0];
   if (bestSom) {
     used.add(bestSom.id);
     picks.push({
       id: "best-overall",
       title: "Best for your weights",
-      rationale: `Top SOM score in this set (${somScores.get(bestSom.id)?.score ?? 0}).`,
+      rationale: `Top fit score in this set (${fitScores.get(bestSom.id)?.score ?? 0}).`,
       model: bestSom,
     });
   }

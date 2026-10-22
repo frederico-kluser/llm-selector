@@ -1,13 +1,13 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://raw.githubusercontent.com/frederico-kluser/som-llm-selector/main/config.schema.json",
-  "title": "SOM configuration export",
-  "description": "A portable SOM view: filters, sort, score weights, selection and presets. API keys are never included.",
+  "$id": "https://raw.githubusercontent.com/frederico-kluser/llm-selector/main/config.schema.json",
+  "title": "LLM Selector configuration export",
+  "description": "A portable LLM Selector view: filters, sort, score weights, selection and presets. API keys are never included.",
   "type": "object",
   "additionalProperties": true,
   "properties": {
     "$schema": { "type": "string" },
-    "app": { "type": "string", "const": "som-llm-selector" },
+    "app": { "type": "string", "const": "llm-selector" },
     "version": { "type": "integer", "const": 1 },
     "exportedAt": { "type": "string", "format": "date-time" },
     "view": { "type": "string", "enum": ["explore", "compare", "presets"] },

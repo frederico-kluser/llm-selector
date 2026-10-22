@@ -11,7 +11,7 @@ import {
   type Filters,
 } from "@/lib/filter";
 import { importConfig, mergeFilters, makePreset } from "@/lib/presets";
-import { computeSomScores, paretoFrontier, recommend } from "@/lib/scoring";
+import { computeFitScores, paretoFrontier, recommend } from "@/lib/scoring";
 import { decodeState, encodeState } from "@/lib/url";
 import type { BenchmarkScores, LlmModel } from "@/lib/types";
 
@@ -197,11 +197,11 @@ describe("filter engine", () => {
 
 describe("scoring", () => {
   it("ranks within the filtered set and respects weights", () => {
-    const cheapFirst = computeSomScores(models, { quality: 0, price: 100, speed: 0, context: 0, cache: 0 });
+    const cheapFirst = computeFitScores(models, { quality: 0, price: 100, speed: 0, context: 0, cache: 0 });
     const best = [...cheapFirst.entries()].sort((a, b) => b[1].score - a[1].score)[0];
     expect(best[0]).toBe("free/model");
 
-    const qualityFirst = computeSomScores(models, { quality: 100, price: 0, speed: 0, context: 0, cache: 0 });
+    const qualityFirst = computeFitScores(models, { quality: 100, price: 0, speed: 0, context: 0, cache: 0 });
     const top = [...qualityFirst.entries()].sort((a, b) => b[1].score - a[1].score)[0];
     expect(top[0]).toBe("open/expensive");
   });
@@ -222,7 +222,7 @@ describe("scoring", () => {
   });
 
   it("produces recommendations that exist in the set", () => {
-    const scores = computeSomScores(models, {
+    const scores = computeFitScores(models, {
       quality: 45,
       price: 25,
       speed: 12,

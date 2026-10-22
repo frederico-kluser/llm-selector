@@ -43,7 +43,7 @@ import {
 import { buildConfig, importConfig, slugifyName } from "@/lib/presets";
 import {
   WEIGHT_LABELS,
-  computeSomScores,
+  computeFitScores,
   paretoFrontier,
   recommend,
 } from "@/lib/scoring";
@@ -108,13 +108,13 @@ export default function App() {
   const models = catalog?.models ?? [];
   const filtered = useMemo(() => applyFilters(models, filters), [models, filters]);
   const counts = useMemo(() => facetCounts(models, filters), [models, filters]);
-  const scoreParts = useMemo(() => computeSomScores(filtered, weights), [filtered, weights]);
-  const somMap = useMemo(() => {
+  const scoreParts = useMemo(() => computeFitScores(filtered, weights), [filtered, weights]);
+  const fitMap = useMemo(() => {
     const map = new Map<string, number>();
     for (const [id, parts] of scoreParts) map.set(id, parts.score);
     return map;
   }, [scoreParts]);
-  const sorted = useMemo(() => sortModels(filtered, sort, somMap), [filtered, sort, somMap]);
+  const sorted = useMemo(() => sortModels(filtered, sort, fitMap), [filtered, sort, fitMap]);
   const frontier = useMemo(() => paretoFrontier(filtered), [filtered]);
   const picks = useMemo(() => recommend(filtered, scoreParts), [filtered, scoreParts]);
   const modelsById = useMemo(() => new Map(models.map((model) => [model.id, model])), [models]);
@@ -247,9 +247,9 @@ export default function App() {
             <a href="#results" className="flex items-center gap-2.5">
               <BrandMark />
               <div className="leading-none">
-                <div className="text-[14px] font-semibold tracking-[-0.02em] text-fg">SOM</div>
+                <div className="text-[14px] font-semibold tracking-[-0.02em] text-fg">LLM Selector</div>
                 <div className="mt-[3px] hidden text-[10px] uppercase tracking-[0.16em] text-fg-dim sm:block">
-                  LLM selector
+                  model picker
                 </div>
               </div>
             </a>
@@ -355,7 +355,7 @@ export default function App() {
                 filtered={filtered}
                 sorted={sorted}
                 frontier={frontier}
-                somMap={somMap}
+                fitMap={fitMap}
                 sort={sort}
                 density={density}
                 columns={columns}
@@ -485,7 +485,7 @@ function ExploreView({
   filtered,
   sorted,
   frontier,
-  somMap,
+  fitMap,
   sort,
   density,
   columns,
@@ -506,7 +506,7 @@ function ExploreView({
   filtered: ReturnType<typeof applyFilters>;
   sorted: ReturnType<typeof sortModels>;
   frontier: Set<string>;
-  somMap: Map<string, number>;
+  fitMap: Map<string, number>;
   sort: Sort;
   density: "compact" | "cozy" | "comfortable";
   columns: typeof DEFAULT_COLUMNS;
@@ -702,7 +702,7 @@ function ExploreView({
             density={density}
             columns={columns}
             selected={selected}
-            somScores={somMap}
+            fitScores={fitMap}
             onSort={onSort}
             onToggle={onToggle}
             onInspect={onInspect}

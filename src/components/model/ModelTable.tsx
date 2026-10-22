@@ -33,7 +33,7 @@ const COLUMNS: Column[] = [
   { key: "intelligence", label: "Intel", hint: "Artificial Analysis intelligence index", sortKey: "intelligence", align: "right", width: 74, hideInConfig: "intelligence" },
   { key: "coding", label: "Code", hint: "Coding index", sortKey: "coding", align: "right", width: 70, hideInConfig: "coding" },
   { key: "speed", label: "Tok/s", hint: "Median output tokens per second", sortKey: "speed", align: "right", width: 72, hideInConfig: "speed" },
-  { key: "som", label: "SOM", hint: "Blend of your weights, ranked within this set", sortKey: "som", align: "right", width: 68 },
+  { key: "som", label: "FIT", hint: "Fit score: your weights, ranked within this set", sortKey: "som", align: "right", width: 68 },
 ];
 
 export interface ModelTableProps {
@@ -42,7 +42,7 @@ export interface ModelTableProps {
   density: Density;
   columns: ColumnConfig;
   selected: string[];
-  somScores: Map<string, number>;
+  fitScores: Map<string, number>;
   onSort: (key: SortKey) => void;
   onToggle: (id: string) => void;
   onInspect: (id: string) => void;
@@ -55,7 +55,7 @@ export function ModelTable({
   density,
   columns,
   selected,
-  somScores,
+  fitScores,
   onSort,
   onToggle,
   onInspect,
@@ -221,7 +221,7 @@ export function ModelTable({
                     )}
                     {column.key === "som" && (
                       <span className="numeric text-[12px] text-accent">
-                        {somScores.get(model.id)?.toFixed(1) ?? "—"}
+                        {fitScores.get(model.id)?.toFixed(1) ?? "—"}
                       </span>
                     )}
                   </div>
