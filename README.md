@@ -170,6 +170,7 @@ documented licence note.
 
 ## License
 
-Code: [MIT](LICENSE). The name "SOM" and the logo are not covered by the MIT grant.
+Code: [MIT](LICENSE). The names "SOM" / "LLM Selector" and the logo are not covered by the MIT grant
+(see [NOTICE.md](NOTICE.md#trademarks)).
 
 Benchmark and catalogue data remain the property of their providers, under their own terms.
