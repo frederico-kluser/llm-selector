@@ -25,6 +25,16 @@ Node 24+ and pnpm 11+ (see `.nvmrc` / `packageManager`).
 - **Charts get no new dependencies.** They are hand-written SVG so they stay accessible and small.
 - **Motion is optional.** Respect `prefers-reduced-motion`; animate only `transform`/`opacity`.
 
+## Branch names
+
+The local OSS hooks (and the GitHub ruleset) reject direct pushes to `main`, so work on a branch
+named `<type>/<slug>` where `<type>` is one of:
+
+`feat` · `fix` · `docs` · `style` · `refactor` · `perf` · `test` · `build` · `ci` · `revert` · `hotfix` · `release`
+
+`chore/` is **not** an accepted prefix — use `build/` for tooling and repo housekeeping. Dependabot and
+Renovate branches are exempt.
+
 ## Commits
 
 Conventional Commits (`feat:`, `fix:`, `docs:`, `refactor:`, `test:`, `chore:`). One logical change per
@@ -38,7 +48,7 @@ under the project licence (Developer Certificate of Origin 1.1). Add `Signed-off
 
 ## Pull requests
 
-1. Fork, branch from `main`.
+1. Fork, branch from `main` (`feat/`, `fix/`, … — see above).
 2. Fill in the PR template: what changed, why, and how you verified it.
 3. `pnpm typecheck && pnpm test && pnpm build` must pass locally; CI enforces the same.
 4. Add a CHANGELOG entry under `## [Unreleased]` for user-visible changes.
